@@ -1,0 +1,878 @@
+Query,Output
+"Retrieve work items in the ""In Progress"" stage owned by ""USER-456"" and ""USER-789"", summarize them, and prioritize by severity.","[
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""stage.name"",
+        ""argument_value"": [""In Progress""]
+      },
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""USER-456"", ""USER-789""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"Search for objects related to the part ""FEAT-789,"" retrieve work items owned by the user ""DEVU-456,"" and prioritize them.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""FEAT-789""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""DEVU-456""]
+      },
+      {
+        ""argument_name"": ""applies_to_part"",
+        ""argument_value"": [""$$PREV[0]""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+"Get the current sprint ID and retrieve work items in that sprint owned by user ""DEVU-123.""","[
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""DEVU-123""]
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  }
+]"
+"Create actionable tasks from a given text, extract actionable insights, and add them to the current sprint.","[
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""Sample text with actionable insights.""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[0]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+"Search for work items related to the customer ""CustomerABC,"" retrieve those with a priority of ""p1,"" and summarize them.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""CustomerABC""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""issue.rev_orgs"",
+        ""argument_value"": [""$$PREV[0]""]
+      },
+      {
+        ""argument_name"": ""issue.priority"",
+        ""argument_value"": [""p1""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+"Summarize work items similar to ""TKT-456"" and prioritize them.","[
+  {
+    ""tool_name"": ""get_similar_work_items"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_id"",
+        ""argument_value"": ""TKT-456""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+"Search for objects related to the customer ""VIPCustomer,"" retrieve work items owned by ""DEVU-789"" for those customers, and generate a summary of those work items.
+
+json","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""VIPCustomer""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""DEVU-789""]
+      },
+      {
+        ""argument_name"": ""issue.rev_orgs"",
+        ""argument_value"": [""$$PREV[0]""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+" Search for an object by name, add its work items to the current sprint, and retrieve the current user's information.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""ObjectName""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": [""$$PREV[0]""]
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""who_am_i"",
+    ""arguments"": []
+  }
+]
+"
+"Given a team meeting transcript ""MeetingTranscript,"" create action items and add them to the current sprint.
+","[
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""MeetingTranscript""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[0]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+"Get all work items with the priority ""p2,"" add them to the current sprint, and retrieve the ID of the current sprint.","[
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""issue.priority"",
+        ""argument_value"": [""p2""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[0]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  }
+]"
+"Given a search string for a customer name, find matching objects, retrieve high-severity tickets related to those customers, and generate a summary.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""CustomerName""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""ticket.rev_org"",
+        ""argument_value"": [""$$PREV[0]""]
+      },
+      {
+        ""argument_name"": ""ticket.severity"",
+        ""argument_value"": [""high""]
+      },
+      {
+        ""argument_name"": ""type"",
+        ""argument_value"": [""ticket""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"Create actionable tasks from a given text, retrieve work items similar to those tasks, and add them to the current sprint.","[
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""Some actionable text.""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_similar_work_items"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_id"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[1]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[2]""
+      }
+    ]
+  }
+]
+"
+"Search for objects related to the part numbers ""PART-003"" and ""PART-004,"" retrieve high-severity issues associated with them, and create a summary.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": [""PART-003"", ""PART-004""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""issue.rev_orgs"",
+        ""argument_value"": [""$$PREV[0]""]
+      },
+      {
+        ""argument_name"": ""issue.priority"",
+        ""argument_value"": [""p0""]
+      },
+      {
+        ""argument_name"": ""type"",
+        ""argument_value"": [""issue""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"Get the current sprint ID, find work items that are similar to ""don:core:dvrv-us-1:devo/0:issue/2,"" and prioritize them based on internal criteria.","[
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""get_similar_work_items"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_id"",
+        ""argument_value"": ""don:core:dvrv-us-1:devo/0:issue/2""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]"
+"Given a search string for a part name, find matching objects and create actionable tasks from the retrieved information.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""PartXYZ""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  }
+]"
+"Extract actionable insights from a provided text, create tasks for them, and summarize the created tasks.","[
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""Text with actionable insights.""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  }
+]"
+"Search for objects related to the customer ""ImportantClient,"" retrieve work items created by users DEVU-789 and DEVU-987, prioritize them by severity, and add the high-priority ones to the current sprint. Additionally, find similar work items to the highest priority one and create actionable tasks from their text.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""ImportantClient""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""created_by"",
+        ""argument_value"": [""DEVU-789"", ""DEVU-987""]
+      },
+      {
+        ""argument_name"": ""issue.rev_orgs"",
+        ""argument_value"": [""$$PREV[0]""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[2]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[3]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_similar_work_items"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_id"",
+        ""argument_value"": ""$$PREV[2][0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""$$PREV[5][0].description""
+      }
+    ]
+  }
+]
+"
+"Retrieve work items created by users DEVU-456 and DEVU-789, search for related objects by name, extract actionable insights from the retrieved information, and create tasks for them. Finally, add the created tasks to the current sprint.
+","[
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""created_by"",
+        ""argument_value"": [""DEVU-456"", ""DEVU-789""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[2]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[3]""
+      }
+    ]
+  }
+]
+"
+"Search for objects related to the part numbers ""PART-001"" and ""PART-002,"" prioritize them based on severity, and create actionable tasks from the information. Finally, add the created tasks to the current sprint.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": [""PART-001"", ""PART-002""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[2]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[3]""
+      }
+    ]
+  }
+]
+"
+"Find work items related to the project ""XYZ"" and summarize them.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""XYZ""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""applies_to_part"",
+        ""argument_value"": [""$$PREV[0]""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"List all work items with the priority ""p2"" created by user DEVU-789.","[
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""issue.priority"",
+        ""argument_value"": [""p2""]
+      },
+      {
+        ""argument_name"": ""created_by"",
+        ""argument_value"": [""DEVU-789""]
+      }
+    ]
+  }
+]"
+"Retrieve work items related to the project ""EnterprisePlatform"" and provide a detailed summary, including information on the assignees, creation dates, and issue priorities.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""EnterprisePlatform""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""applies_to_part"",
+        ""argument_value"": [""$$PREV[0]""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+" Identify high-priority tickets related to the customer ""MajorClient"" and generate a comprehensive summary, including the severity, status, and associated Rev organizations.","[
+  {
+    ""tool_name"": ""search_object_by_name"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""query"",
+        ""argument_value"": ""MajorClient""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""ticket.rev_orgs"",
+        ""argument_value"": [""$$PREV[0]""]
+      },
+      {
+        ""argument_name"": ""ticket.severity"",
+        ""argument_value"": [""high""]
+      },
+      {
+        ""argument_name"": ""type"",
+        ""argument_value"": [""ticket""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"Create actionable tasks from the content of a DOCUMENT and add them to the current sprint, providing details on the sprint ID and the newly created tasks.","[
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": DOCUMENT
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[0]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"List all work items owned by users ""DEVU-987"" and ""DEVU-654"" in the ""Review"" stage, prioritizing them based on their urgency. Additionally, provide a summary of these prioritized work items.","[
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""DEVU-987"", ""DEVU-654""]
+      },
+      {
+        ""argument_name"": ""stage.name"",
+        ""argument_value"": [""Review""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"Get my work items in the ""Completed"" stage, summarizing them.","[
+  {
+    ""tool_name"": ""who_am_i"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""$$PREV[0]""]
+      },
+      {
+        ""argument_name"": ""stage.name"",
+        ""argument_value"": [""Completed""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"
+"Identify the current user and then create actionable tasks from MEETING_SUMMARY, adding them to the current sprint.","[
+  {
+    ""tool_name"": ""who_am_i"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""create_actionable_tasks_from_text"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""text"",
+        ""argument_value"": MEETING_SUMMARY
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""get_sprint_id"",
+    ""arguments"": []
+  },
+  {
+    ""tool_name"": ""add_work_items_to_sprint"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""work_ids"",
+        ""argument_value"": ""$$PREV[1]""
+      },
+      {
+        ""argument_name"": ""sprint_id"",
+        ""argument_value"": ""$$PREV[2]""
+      }
+    ]
+  }
+]
+"

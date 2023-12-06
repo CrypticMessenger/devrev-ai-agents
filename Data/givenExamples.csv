@@ -1,0 +1,301 @@
+Query,Output
+"Summarize work items similar to
+don:core:dvrv-us-1:devo/0:issue/1","[
+{
+""tool_name"": ""get_similar_work_items"",
+""arguments"": [
+{
+""argument_name"": ""work_id"",
+""argument_value"": ""don:core:dvrv-us-1:devo/0:issue/1""
+}
+]
+},
+{
+""tool_name"": ""summarize_objects"",
+""arguments"": [
+{
+""argument_name"": ""objects"",
+""argument_value"": ""$$PREV[0]""
+}
+]
+}
+]"
+What is the meaning of life?,[]
+Prioritize my P0 issues and add them to the current sprint,"[
+{
+""tool_name"": ""whoami"",
+""arguments"": []
+},
+{
+""tool_name"": ""works_list"",
+""arguments"": [
+{
+""argument_name"": ""issue.priority"",
+
+Unset
+""argument_value"": [""p0""]
+},
+{
+""argument_name"": ""owned_by"",
+""argument_value"": [""$$PREV[0]""]
+},
+{
+""argument_name"": ""type"",
+""argument_value"": [""issue""]
+}
+]
+},
+{
+""tool_name"": ""prioritize_objects"",
+""arguments"": [
+{
+""argument_name"": ""objects"",
+""argument_value"": ""$$PREV[1]""
+}
+]
+},
+{
+""tool_name"": ""get_sprint_id"",
+""arguments"": []
+},
+{
+""tool_name"": ""add_work_items_to_sprint"",
+""arguments"": [
+{
+""argument_name"": ""work_ids"",
+""argument_value"": ""$$PREV[2]""
+},
+{
+""argument_name"": ""sprint_id"",
+""argument_value"": ""$$PREV[3]""
+}
+]
+}
+]"
+"Summarize high severity tickets
+from the customer
+UltimateCustomer","[
+{
+""tool_name"": ""search_object_by_name"",
+""arguments"": [
+
+Unset
+{
+""argument_name"": ""query"",
+""argument_value"": ""UltimateCustomer""
+}
+]
+},
+{
+""tool_name"": ""works_list"",
+""arguments"": [
+{
+""argument_name"": ""ticket.rev_org"",
+""argument_value"": [""$$PREV[0]""]
+},
+{
+""argument_name"": ""ticket.severity"",
+""argument_value"": [""high""]
+},
+{
+""argument_name"": ""type"",
+""argument_value"": [""ticket""]
+}
+]
+},
+{
+""tool_name"": ""summarize_objects"",
+""arguments"": [
+{
+""argument_name"": ""objects"",
+""argument_value"": ""$$PREV[1]""
+}
+]
+}
+]"
+"What are my all issues in the triage
+stage under part FEAT-123?
+Summarize them.","[
+{
+""tool_name"": ""whoami"",
+""arguments"": []
+},
+{
+""tool_name"": ""works_list"",
+""arguments"": [
+{
+""argument_name"": ""stage.name"",
+
+Unset
+""argument_value"": [""triage""]
+},
+{
+""argument_name"": ""applies_to_part"",
+""argument_value"": [""FEAT-123""]
+},
+{
+""argument_name"": ""owned_by"",
+""argument_value"": [""$$PREV[0]""]
+},
+{
+""argument_name"": ""type"",
+""argument_value"": [""issue""]
+}
+]
+},
+{
+""tool_name"": ""summarize_objects"",
+""arguments"": [
+{
+""argument_name"": ""objects"",
+""argument_value"": ""$$PREV[1]""
+}
+]
+}
+]"
+"List all high severity tickets coming
+in from slack from customer
+Cust123 and generate a summary
+of them.","[
+{
+tool_name: ""search_object_by_name"",
+arguments: [
+{
+argument_name: ""query"",
+argument_value: ""Cust123""
+}
+]
+},
+{
+tool_name: ""works_list"",
+arguments: [
+{
+argument_name: ""ticket.rev_org"",
+argument_value: [""$$PREV[0]""]
+},
+
+Unset
+{
+argument_name: ""ticket.severity"",
+argument_value: [""high""]
+},
+{
+argument_name: ""ticket.source_channel"",
+argument_value: [""slack""]
+},
+{
+argument_name: ""type"",
+argument_value: [""ticket""]
+}
+]
+},
+{
+tool_name: ""summarize_objects"",
+arguments: [
+{
+argument_name: ""objects"",
+argument_value: ""$$PREV[1]""
+}
+]
+}
+]"
+"Given a customer meeting
+transcript T, create action items
+and add them to my current sprint","[
+{
+""tool_name"": ""create_actionable_tasks_from_text"",
+""arguments"": [
+{
+""argument_name"": ""text"",
+""argument_value"": ""T""
+}
+]
+},
+{
+""tool_name"": ""get_sprint_id"",
+""arguments"": []
+},
+{
+""tool_name"": ""add_work_items_to_sprint"",
+""arguments"": [
+{
+""argument_name"": ""work_ids"",
+
+Unset
+""argument_value"": ""$$PREV[0]""
+},
+{
+""argument_name"": ""sprint_id"",
+""argument_value"": ""$$PREV[1]""
+}
+]
+}
+]"
+"Get all work items similar to
+TKT-123, summarize them, create
+issues from that summary, and
+prioritize them","[
+{
+tool_name: ""get_similar_work_items"",
+arguments: [
+{
+argument_name: ""work_id"",
+argument_value: ""TKT-123""
+}
+]
+},
+{
+tool_name: ""summarize_objects"",
+arguments: [
+{
+argument_name: ""objects"",
+argument_value: ""$$PREV[0]""
+}
+]
+},
+{
+tool_name: ""create_actionable_tasks_from_text"",
+arguments: [
+{
+argument_name: ""text"",
+argument_value: ""$$PREV[1]""
+}
+]
+},
+{
+tool_name: ""prioritize_objects"",
+arguments: [
+{
+argument_name: ""objects"",
+argument_value: ""$$PREV[2]""
+
+Extra/Bonus
+● Not every user query could be potentially solved by taking composition of available
+functions, and might need some additional logic around combining the outputs of those
+functions, like mathematical operations, iterations, conditional logic etc.
+● You would get bonus points if your solution can handle those cases/scenarios, rather
+than just being able to output the asked list of JSONs.
+
+Testing
+The provided code should compile, and you need to provide clear instructions on how to
+execute it. The output of the code given the query should be the JSON with schema defined
+above under Problem Statement section.
+NOTE: It should also be easy to add a new tool, and you need to provide clear instructions for
+that, and your code should be able to handle the addition of new tools.
+Deliverables
+- Code
+- Report on the experiments and research done to implement the solution.
+
+Report
+Apart from the above mentioned deliverables, you would also be required to submit the
+mid-term and end-term report which should necessarily include the following:
+- Literature review
+- Different techniques evaluated
+- Final technique being used, latency metric corresponding to it
+- Future work
+- References
+
+}
+]
+}
+]"
