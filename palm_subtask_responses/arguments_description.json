@@ -1,0 +1,37 @@
+{
+  "works_list": [
+    "name: applies_to_part\ntype: Array[String]\noptions: [Any]",
+    "name: created_by\ntype: Array[String]\noptions: [Any]",
+    "name: issue.priority\ntype: Array[String]\noptions: [p0, p1, p2, p3]",
+    "name: issue.rev_orgs\ntype: Array[String]\noptions: [Any]",
+    "name: limit\ntype: int32\noptions: [Any]",
+    "name: owned_by\ntype: Array[String]\noptions: [Any]",
+    "name: stage.name\ntype: Array[String]\noptions: [Any]",
+    "name: ticket.needs_response\ntype: Boolean\noptions: [true, false]",
+    "name: ticket.rev_org\ntype: Array[String]\noptions: [Any]",
+    "name: ticket.severity\ntype: Array[String]\noptions: [blocker, high, low, medium]",
+    "name: ticket.source_channel\ntype: Array[String]\noptions: [Any]",
+    "name: types\ntype: Array[String]\noptions: [issue, ticket, task]"
+  ],
+  "summarize_objects": [
+    "name: objects\ntype: Array[Object]\noptions: [Any]"
+  ],
+  "prioritize_objects": [
+    "name: objects\ntype: Array[Object]\noptions: [Any]"
+  ],
+  "add_work_items_to_sprint": [
+    "name: work_ids\ntype: Array[String]\noptions: [Any]",
+    "name: sprint_id\ntype: String\noptions: [Any]"
+  ],
+  "get_sprint_id": [],
+  "get_similar_work_items": [
+    "name: work_id\ntype: String\noptions: [Any]"
+  ],
+  "search_object_by_name": [
+    "name: query\ntype: String\noptions: [Any]"
+  ],
+  "create_actionable_tasks_from_text": [
+    "name: text\ntype: String\noptions: [Any]"
+  ],
+  "who_am_i": []
+}
