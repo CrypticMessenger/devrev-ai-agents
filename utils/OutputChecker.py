@@ -28,6 +28,17 @@ def compare_objects(obj_a, obj_b):
 
     else:
         return obj_a == obj_b
+    
+def score_calc(map1,map2):
+    score=0
+    for tool_name, arguments_list1 in map1.items():
+        if tool_name in map2:
+            arguments_list2 = map2[tool_name]
+            for args1 in arguments_list1:
+                for args2 in arguments_list2:
+                    if compare_objects(args1, args2):
+                        score += 1
+    return score
 
 def processing_list(list):
   prev_outputs = [None] * len(list)
@@ -40,8 +51,8 @@ def processing_list(list):
     prev_outputs[i] = tool['tool_name']
   return list
 
-list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
-list2 = [{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'create_actionable_tasks_from_text', 'arguments': [{'argument_name': 'text', 'argument_value': 'MeetingTranscript'}]},{'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[1]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[0]'}]}]
+# list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
+# list2 = [{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'create_actionable_tasks_from_text', 'arguments': [{'argument_name': 'text', 'argument_value': 'MeetingTranscript'}]},{'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[1]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[0]'}]}]
 
 def compare_lists_of_tools(list1, list2):
     list1 = processing_list(list1)
@@ -49,16 +60,28 @@ def compare_lists_of_tools(list1, list2):
     map1 = {}
     map2 = {}
     for item in list1:
-      map1[item['tool_name']] = item['arguments']
+      tool_name = item['tool_name']
+      if tool_name not in map1:
+         map1[tool_name] = [item['arguments']]
+      else:
+         map1[tool_name].append(item['arguments'])
+
     for item in list2:
-      map2[item['tool_name']] = item['arguments']
-    print(map1)
-    print(map2)
-    return compare_objects(map1,map2)
+      tool_name = item['tool_name']
+      if tool_name not in map2:
+         map2[tool_name] = [item['arguments']]
+      else:
+         map2[tool_name].append(item['arguments'])
+    print("map1: ",map1)
+    print("map2: ",map2)
+    return score_calc(map1,map2)
 
 
 if __name__=='__main__':
     list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
     list2 = [{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'create_actionable_tasks_from_text', 'arguments': [{'argument_name': 'text', 'argument_value': 'MeetingTranscript'}]},{'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[1]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[0]'}]}]
     lists_equal = compare_lists_of_tools(list1, list2)
-    print("Are the lists equal?", lists_equal)
+    tot_func=len(list1)
+    func_matched=lists_equal
+    score=func_matched/tot_func
+    print("Final score", score)
