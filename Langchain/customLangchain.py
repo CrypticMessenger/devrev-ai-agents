@@ -19,10 +19,10 @@ from langchain.agents.format_scratchpad import format_log_to_str
 from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.tools.render import render_text_description
 
-from tools import create_tools
+from .tools import create_tools
 
 
-llm = OpenAI(temperature=0, openai_api_key='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')
+llm = OpenAI(temperature=0, openai_api_key='')
 
 
 class CustomOutputParser(AgentOutputParser):
