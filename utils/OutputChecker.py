@@ -47,7 +47,10 @@ def processing_list(list):
       for arg in tool['arguments']:
           if (arg['argument_value']) and '$$PREV[' in arg['argument_value']:
               prev_idx = int(arg['argument_value'].split('$$PREV[')[1][0])
-              arg['argument_value'] = prev_outputs[prev_idx]
+              if prev_idx == i:
+                 arg['argument_value'] = tool['tool_name']
+              else:
+                arg['argument_value'] = prev_outputs[prev_idx]
     prev_outputs[i] = tool['tool_name']
   return list
 
