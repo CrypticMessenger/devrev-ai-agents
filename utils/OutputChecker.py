@@ -77,8 +77,8 @@ def compare_lists_of_tools(list1, list2):
 
 
 if __name__=='__main__':
-    list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
-    list2 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue_priority', 'argument_value': '[""p2""]'}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
+    list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]},{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'add_work_items_to_sprint', 'arguments':[{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}]
+    list2 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p1']}]},{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'add_work_items_to_sprint', 'arguments':[{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}]
     lists_equal = compare_lists_of_tools(list1, list2)
     print(lists_equal)
     tot_func=len(list1)
