@@ -1,6 +1,5 @@
 def compare_objects(obj_a, obj_b):
     if isinstance(obj_a, dict) and isinstance(obj_b, dict):
-        print("dict",obj_a,obj_b)
         if len(obj_a) != len(obj_b):
             return False
 
@@ -10,7 +9,6 @@ def compare_objects(obj_a, obj_b):
         return True
 
     elif isinstance(obj_a, list) and isinstance(obj_b, list):
-        print("list",obj_a,obj_b)
         if len(obj_a) != len(obj_b):
             return False
         if len(obj_a) == 0:
@@ -75,15 +73,14 @@ def compare_lists_of_tools(list1, list2):
          map2[tool_name] = [item['arguments']]
       else:
          map2[tool_name].append(item['arguments'])
-    print("map1: ",map1)
-    print("map2: ",map2)
     return score_calc(map1,map2)
 
 
 if __name__=='__main__':
     list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
-    list2 = [{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'create_actionable_tasks_from_text', 'arguments': [{'argument_name': 'text', 'argument_value': 'MeetingTranscript'}]},{'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[1]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[0]'}]}]
+    list2 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue_priority', 'argument_value': '[""p2""]'}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
     lists_equal = compare_lists_of_tools(list1, list2)
+    print(lists_equal)
     tot_func=len(list1)
     func_matched=lists_equal
     score=func_matched/tot_func
