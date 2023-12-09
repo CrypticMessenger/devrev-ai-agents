@@ -130,58 +130,52 @@ all_tools = {
 
 
 # Set up the base template
-template = """You are the helping the chatbot of the company dev-rev. Input question is the query of the user. Answer the following questions as best you can. You have access to the following tools:
+template = f"""You are the helping the chatbot of the company dev-rev. Input question is the query of the user. Answer the following questions as best you can. You have access to the following tools:
 
-{tools}
+{all_tools}
 
 You can choose to use no tool.
-If you feel not enough information is present.
+If you feel not enough information is present, Ask the user by query_user tool.
 Use the following format:
 
 Question: the input question you must answer
-Thought: you should always think about what to do
-Action: the action to take, should be one of [{tool_names}]
-Action Input: the input'(argument name, argument value)' to the action
-Observation: the result of the action
-... (this Thought/Action/Action Input/Observation can repeat N times)
-Thought: I now know the final answer
-Final Answer: for each action return "tool_name","argument_name","argument_value"'' '
+now think step by step, and break the Question into multiple actions.
+Final Answer: for each action return "tool_name","argument_name","argument_value"
+For each action, you must search the most relevant sentence in the context, and return the tool name, argument name, argument value.
+
 
 Example:
 
-Question: Summarize high severity tickets from the customer UltimateCustomer.
-Thought: Let's first find the customer "UltimateCustomer".
-Action: search_object_by_name
-Action Input: (query: "UltimateCustomer")
-Observation: No error. Proceed to next step.
-Thought: Now that we've located the customer, we need to fetch the high severity tickets related to them.
-Action: works_list
-Action Input:
-(ticket.rev_org: ["$$PREV[0]"] (Referring to the previously retrieved customer ID),
-ticket.severity: ["high"],
-type: ["ticket"])
-Observation: Retrieves a list of high severity tickets associated with the customer "UltimateCustomer".
-Thought: To get a better understanding of these high severity tickets, let's summarize 'em.
-Action: summarize_objects
-Action Input: (objects: "$$PREV[1]") (Referring to the list of high severity tickets)
-Observation: Provides a summarized view of the high severity tickets associated with the customer "UltimateCustomer".
+Question: Prioritize my P0 issues and add them to the current sprint
 Final Answer:
-"tool_name": "search_object_by_name"
-"argument_name": "query"
-"argument_value": "UltimateCustomer"
+"tool_name": "whoami"
 "tool_name": "works_list"
-"argument_name": "ticket.rev_org"
+"argument_name": "issue.priority"
+"argument_value": ["p0"]
+"argument_name": "owned_by"
 "argument_value": ["$$PREV[0]"]
-"argument_name": "ticket.severity"
-"argument_value": ["high"]
 "argument_name": "type"
-"argument_value": ["ticket"]
-"tool_name": "summarize_objects"
-"argument_name": "objects",
+"argument_value": ["issue"]
+"tool_name": "prioritize_objects"
+"argument_name": "objects"
 "argument_value": "$$PREV[1]"
+"tool_name": "get_sprint_id"
+"tool_name": "add_work_items_to_sprint"
+"argument_name": "work_ids"
+"argument_value": "$$PREV[2]"
+"argument_name": "sprint_id"
+"argument_value": "$$PREV[3]"
 
-Final Answer should contain all the actions(tool name) you took and list of all pairs of argument value and argument name in json as shown above.
+Question: Summarize work items similar to don:core:dvrv-us-1:devo/0:issue/1
+Final Answer:
+"tool_name": "get_similar_work_items"
+"argument_name": "work_id"
+"argument_value": "don:core:dvrv-us-1:devo/0:issue/123"
+"tool_name": "summarize_objects"
+"argument_name": "objects"
+"argument_value": "$$PREV[0]"
+
+Final Answer should contain all the actions(tool name) you took and list of all pairs of argument value and argument name in above format as shown above.
 Begin! Remember to just output the final result. No blabbering
 
-Question: {input}
-{agent_scratchpad}"""
+Question: """

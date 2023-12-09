@@ -18,11 +18,15 @@ from langchain import hub
 from langchain.agents.format_scratchpad import format_log_to_str
 from langchain.agents.output_parsers import ReActSingleInputOutputParser
 from langchain.tools.render import render_text_description
+from langchain.llms import GooglePalm
+
+
 
 from .tools import create_tools
 
 
-llm = OpenAI(temperature=0, openai_api_key='')
+llm = GooglePalm(temperature=0, google_api_key='AIzaSyAq9RCFh9Jx5t9oR20xWRAZdXsn-b01pT8')
+# llm = OpenAI(temperature=0, openai_api_key='')
 
 
 class CustomOutputParser(AgentOutputParser):

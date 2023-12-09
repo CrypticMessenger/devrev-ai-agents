@@ -62,13 +62,13 @@ def create_tools(tools_json):
         return user_input
 
 
-    user_query_tool = Tool(
-        name = "query_user",
-        func = query_user,
-        description = "Use this function to ask user for more some clarification"
-    )
+    # user_query_tool = Tool(
+    #     name = "query_user",
+    #     func = query_user,
+    #     description = "Use this function to ask user for more some clarification"
+    # )
 
-    tools = tools + [user_query_tool]
+    # tools = tools + [user_query_tool]
 
     print("Tools created")
     return tools
