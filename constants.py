@@ -1,3 +1,8 @@
+EXAMPLE_TEMPLATE = """You will be given a function description, for this function create chat examples queries of user for which the function can be used. Example:
+Function description: Function Name is create_actionable_tasks_from_text. Description:Given a text, extracts actionable insights, and creates tasks for them, which are kind of a work item. [argument name - text, description = The text from which the actionable insights need to be created.]
+Output: query1:Given a customer meeting transcript T, create action items. query2: Given summary S of sprint, create action items.
+Create {number_of_examples} examples for the function. Create example queries to cover important aspects of the function.
+"""
 
 all_tools = {
   "tools": [
@@ -42,6 +47,32 @@ all_tools = {
         {
           "name": "stage_name",
           "description": "Filters for records in the provided stage(s) by name",
+          "type": "array of strings"
+        },
+        {
+          "name": "ticket_needs_response",
+          "description": "Filters for tickets that need a response",
+          "type": "boolean"
+        },
+        {
+          "name": "ticket_rev_org",
+          "description": "Filters for tickets associated with any of the provided Rev Organizations",
+          "type": "array of strings",
+          "example": ["REV-123"]
+        },
+        {
+          "name": "ticket_severity",
+          "description": "Filters for tickets with any of the provided severities. Allowed values: blocker, high, low, medium",
+          "type": "array of strings"
+        },
+        {
+          "name": "ticket_source_channel",
+          "description": "Filters for tickets with any of the provided source channels",
+          "type": "array of strings"
+        },
+        {
+          "name": "type",
+          "description": "Filters for work of the provided types. Allowed values: issue, ticket, task",
           "type": "array of strings"
         }
       ]
@@ -131,48 +162,34 @@ all_tools = {
 
 # Set up the base template
 template = """You are the helping the chatbot of the company dev-rev. Input question is the query of the user. Answer the following questions as best you can. You have to get related tools using "get_related_tools" 
-
 You can choose to use no tool.
-
-If you feel not enough information is present.
 Use the following format:
-
 Question: the input question you must answer
-Thought: you should always think about what to do
+Thought: you should always think about what to do for answering user query
 Action: the action to take, should be one of related tool only
 Action Input: the input'(argument name, argument value)' to the action
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
 Final Answer: for each action return "tool_name","argument_name","argument_value"'' '
-
 Example:
-
 Question:  Summarize work items similar to don
 Thought: Let's first find relevant tools for getting work items similar to don
 Action: get_related_tools
 Action Input: ("query": "getting work items similar to don")
-Observation: No error. Proceed to next step.
-Thought: Now we have relevant tools: ["get_similar_work_items"]. Find it's argument
-Action: get_tool_arguments
-Action Input: ("tool_name": "get_similar_work_items")
-Observation: Now we have the tool to complete the Thought. Proceed to next step.
-Thought: We need to fill appropriate arguments for the relevant tool "get_similar_work_items" to get similar work items
+Observation: ["get_similar_work_items","work_items","who_am_i"]
+Thought: Now we have relevant tools: ["get_similar_work_items"]. Let's call it.
 Action: get_similar_work_items
 Action Input: ("work_id": "don")
 Observation: No error. Proceed to next step.
 Thought: We have the work items. Now we need to find related tools to summarize them
 Action: get_related_tools
-Action Input: ("query": "to summarize them")
-Observation: No error. Proceed to next step.
-Thought: we have similar work items to don and now we have related tools to summarize objects: ["summarize_objects"]. Find argument
-Action: get_tool_arguments
-Action Input:("tool_name": "summarize_objects")
-Observation: Now we have the tool to complete the Thought. Proceed to next step.
-Thought: We need to fill appropriate arguments for the relevant tool "summarize_objects" to summarize the objects.
+Action Input: ("query": "to summarize work_items")
+Observation: ["summarize_objects","work_items","get_similar_work_items"]
+Thought: Now we have related tools to summarize objects: ["summarize_objects"].
 Action: summarize_objects
 Action Input:
-(objects: "$$PREV[0]"(Referring to the previously retrived objects)
+(objects: "$$PREV[0]"(Referring to the out of get_similar_work_items, in the indexing do not include "get_related_tools")
 Observation: No error. Proceed to next step.
 Thought: I now know the final answer
 Final Answer:
@@ -182,10 +199,10 @@ Final Answer:
 "tool_name": "summarize_objects"
 "argument_name": "objects"
 "argument_value": "$$PREV[0]"
-
 for the Question:  Summarize work items similar to don,
 Final Answer should contain all the actions(tool name) you took and list of all pairs of argument value and argument name.
-Begin!This Thought/Action/Action Input/Observation can repeat N times.
-
+Begin!This Thought/Action/Action Input/Observation can repeat N times.Take actions and find the answer.
+Solve the query in steps inteligently.If a tools requires a particular input do not assume it, find another tool to get it.
+DO NOT ASSUME ARGUMENT VALUES TO THE FUNCTIONS.
 Question: {input}
 {agent_scratchpad}"""

@@ -21,8 +21,8 @@ from langchain.tools.render import render_text_description
 from langchain.llms import GooglePalm
 
 
-
-from .tools import create_tools
+# import tools.py functions from directory
+from .tools import *
 
 
 llm = GooglePalm(temperature=0, google_api_key='AIzaSyAq9RCFh9Jx5t9oR20xWRAZdXsn-b01pT8')
@@ -37,18 +37,19 @@ class CustomOutputParser(AgentOutputParser):
         i = 0
         while i < len(lines):
             line = lines[i]
-            if line.startswith('"tool name"'):
+            if line.startswith('"tool_name"'):
                 tool_name = line.split(":")[1].strip().strip('"')
                 i=i+1
                 tool_info = {}
                 tool_info['tool_name'] = tool_name
                 arguments = []
                 while i<len(lines):
-                    if lines[i].startswith('"tool name"'):
+                    if lines[i].startswith('"tool_name"'):
                         break
                     else:
                         argument_name = lines[i].split(":")[1].strip().strip('"')
-                        argument_value =  lines[i+1].split(":")[1].strip().strip('"')
+                        # split next line by '":' and then strip the spaces and " from the argument value
+                        argument_value = lines[i+1].split('":')[1].strip().strip('"')
                         arguments.append({"argument_name": argument_name, "argument_value":argument_value})
                         i=i+2
                 tool_info['arguments']=arguments
@@ -126,7 +127,7 @@ class Inference:
             allowed_tools=self.tool_names
         )
 
-        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True)
+        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=False,max_iterations=5000)
 
     def invoke_agent(self, input_question):
         print("Agent Invoked")

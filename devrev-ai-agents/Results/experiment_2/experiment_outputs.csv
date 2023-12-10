@@ -1,3 +1,0 @@
-,Query,Output,Output_map,Similarity Score
-0,"Given a team meeting transcript ""MeetingTranscript,"" create action items and add them to the current sprint.
-",[],"[{'tool_name': 'create_actionable_tasks_from_text', 'arguments': [{'argument_name': 'text', 'argument_value': 'MeetingTranscript'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': 'create_actionable_tasks_from_text'}, {'argument_name': 'sprint_id', 'argument_value': 'get_sprint_id'}]}]",0

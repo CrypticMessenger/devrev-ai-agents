@@ -1,2 +1,0 @@
-,Query,Output,Output_map,Similarity Score
-0,"Get my work items in the ""Completed"" stage, summarizing them.",[],"[{'tool_name': 'who_am_i', 'arguments': []}, {'tool_name': 'works_list', 'arguments': [{'argument_name': 'owned_by', 'argument_value': ['$$PREV[0]']}, {'argument_name': 'stage.name', 'argument_value': ['Completed']}]}, {'tool_name': 'summarize_objects', 'arguments': [{'argument_name': 'objects', 'argument_value': 'works_list'}]}]",0

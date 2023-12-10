@@ -30,8 +30,6 @@ def generate_functions(data):
         generated_function = local_namespace[tool['name']]
         globals()[tool['name']] = generated_function
         all_tool_functions.append(generated_function)
-
-        print(function_template)
     return all_tool_functions
 
 def create_tools(tools_json):
@@ -66,7 +64,6 @@ def create_tools(tools_json):
         return model.get_related_tools(query)[:3]
 
     def get_tool_arguments_function(tool_name):
-        print(tools_json)
         for i in range(len(tools_json['tools'])):
             if tools_json['tools'][i]['name'] in tool_name:
                 return f"{tools_json['tools'][i]['arguments']}"

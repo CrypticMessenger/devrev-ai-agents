@@ -10,7 +10,7 @@ from sentence_transformers import SentenceTransformer, util
 import math
 
 from Langchain.customLangchain import Inference
-from Langchain.constants import template,all_tools
+from constants import template,all_tools
 from utils.OutputChecker import compare_lists_of_tools
 
 
@@ -18,54 +18,42 @@ from utils.OutputChecker import compare_lists_of_tools
 
 """
 class ExperimentPipeline:
-    def __init__(self, inference_func, inference_args, result_map, similarity_func, EXP_DIR, df):
+    def __init__(self, inference_func, result_map, similarity_func, EXP_DIR, df):
         self.inference_func = inference_func
         self.similarity_func = similarity_func
         self.result_map = result_map
         self.results = []
-        self.arg_names = list(inference_args.keys())
-        self.arg_values = [inference_args[name] for name in self.arg_names]
         self.size = len(result_map)
         self.exp_dir = EXP_DIR
         self.exp_number = self.get_next_experiment_number()
         self.exp_dir = os.path.join(EXP_DIR , f"experiment_{self.exp_number}")
-        self.master_excel_file = '/content/drive/MyDrive/Tech.High.Devrev/Results/Master_Results.xlsx'
+        self.master_excel_file = os.path.join(EXP_DIR,'Master_Results.xlsx')
         self.output_df = df
 
 
     def run_experiment(self,save_results=True):
-
         if not os.path.exists(self.exp_dir):
               os.makedirs(self.exp_dir)
+        total_inference_time = 0
+        total_similarity = 0
+        outputs=[]
+        similarities = []
+        for query in self.result_map.keys():
+            start_time = time.time()
+            output = self.inference_func(query)
+            outputs.append(output)
 
-        arg_permutations = itertools.product(*self.arg_values)
+            similarity = self.similarity_func(self.result_map[query], output)
+            similarities.append(similarity)
 
-        for values in arg_permutations:
-            args_dict = {name: value for name, value in zip(self.arg_names, values)}
+            end_time = time.time()
+            inference_time = end_time - start_time
 
-            total_inference_time = 0
-            total_similarity = 0
+            total_inference_time += inference_time
+            total_similarity += similarity
 
-            outputs=[]
-            similarities = []
-            for query in self.result_map.keys():
-                start_time = time.time()
-                output = self.inference_func(query, **args_dict)
-                outputs.append(output)
-
-                similarity = self.similarity_func(self.result_map[query], output)
-                similarities.append(similarity)
-
-                end_time = time.time()
-                inference_time = end_time - start_time
-
-                total_inference_time += inference_time
-                total_similarity += similarity
-
-            self.save_outputs(outputs,similarities)
-
-            self.results.append({**args_dict, 'Similarity': total_similarity, 'Inference_Time': total_inference_time})
-
+        self.save_outputs(outputs,similarities)
+        self.results.append({'Similarity': total_similarity, 'Inference_Time': total_inference_time})
         if save_results:
             self.save_results()
 
@@ -111,7 +99,7 @@ class ExperimentPipeline:
 
         plot_similarity_name = os.path.join(self.exp_dir, f"exp_{self.exp_number}_metrics_plot.png")
         plt.savefig(plot_similarity_name)
-        plt.show()
+        # plt.show()
 
     def get_next_experiment_number(self):
         exp_num = 1
@@ -120,7 +108,7 @@ class ExperimentPipeline:
         return exp_num
 
     def add_to_master_excel(self):
-
+      print(self.master_excel_file)
       if not os.path.exists(self.master_excel_file):
           with pd.ExcelWriter(self.master_excel_file, engine='openpyxl') as writer:
               empty_df = pd.DataFrame(columns=['Placeholder'])
