@@ -33,7 +33,7 @@ def add_embedding(embedding_data:json)->None:
         
         if len(collection.indexes) == 0:
             # build index
-            index_params = {"index_type": "AUTOINDEX", "metric_type": "L2", "params": {}}
+            index_params = {"index_type": "AUTOINDEX", "metric_type": "COSINE", "params": {}}
             t0 = time.time()
             print("Building AutoIndex...")
             if model=='openai':
