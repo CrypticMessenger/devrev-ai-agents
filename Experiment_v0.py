@@ -15,6 +15,7 @@ def objective_similarity(list1,list2):
 def inference_function(query):
     obj = Inference(template,all_tools)
     response = obj.invoke_agent(query)
+    print(response)
     return response
 
 def process_output(input_string) :
@@ -31,7 +32,11 @@ def process_output(input_string) :
 
 original_df = pd.read_csv("Data/test_v0.csv")
 original_df['Output_map'] = original_df['Output'].apply(process_output)
-result_map = original_df.set_index('Query')['Output_map'].to_dict()
+
+
+df = original_df.sample(n=10, random_state=35)
+df = df.reset_index(drop=True)
+result_map = df.set_index('Query')['Output_map'].to_dict()
 
 queries_with_empty_map = [query for query, value in result_map.items() if value == {}]
 
@@ -42,8 +47,8 @@ if queries_with_empty_map:
 else:
     print("No queries with an empty map as value found.")
 
-EXP_DIR = "devrev-ai-agents/Results"
+EXP_DIR = "Results"
 
 
-experiment = ExperimentPipeline(inference_function,result_map, objective_similarity, EXP_DIR, original_df)
+experiment = ExperimentPipeline(inference_function,result_map, objective_similarity, EXP_DIR, df)
 experiment.run_experiment(save_results=True)

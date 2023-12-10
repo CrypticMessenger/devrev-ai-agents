@@ -27,7 +27,7 @@ class ExperimentPipeline:
         self.exp_dir = EXP_DIR
         self.exp_number = self.get_next_experiment_number()
         self.exp_dir = os.path.join(EXP_DIR , f"experiment_{self.exp_number}")
-        self.master_excel_file = 'Results/Master_Results.xlsx'
+        self.master_excel_file = os.path.join(EXP_DIR,'Master_Results.xlsx')
         self.output_df = df
 
 

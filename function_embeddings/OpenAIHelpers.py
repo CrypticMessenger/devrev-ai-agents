@@ -115,26 +115,26 @@ if __name__=="__main__":
   client = OpenAI(api_key = "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")
   model = OpenAIWrapper(client)
   json_file_path = "function_embeddings/function_embeddings_openai_updated.json"
-  # data = []
-  # for tool in all_tools['tools']:
-  #   function_description_openai = model.generate_function_description(tool)
-  #   function_examples = model.generate_examples(function_description_openai,10)
-  #   function_arguments = ""
-  #   if 'arguments' in tool:
-  #     function_arguments = tool['arguments']
-  #   rich_desc  = f"Function name is {tool['name']}.{function_description_openai}. Arguments = {function_arguments} Examples = {function_examples}"
-  #   function_embedding = model.get_embedding(rich_desc)
-  #   function_info = {
-  #     'function_name': tool['name'],
-  #     'description': function_description_openai,
-  #     'embedding': function_embedding,
-  #     'examples': function_examples,
-  #     'arguments': function_arguments
-  #   }
-  #   data.append(function_info)
+  data = []
+  for tool in all_tools['tools']:
+    function_description_openai = model.generate_function_description(tool)
+    function_examples = model.generate_examples(function_description_openai,10)
+    function_arguments = ""
+    if 'arguments' in tool:
+      function_arguments = tool['arguments']
+    rich_desc  = f"Function name is {tool['name']}.{function_description_openai}. Arguments = {function_arguments} Examples = {function_examples}"
+    function_embedding = model.get_embedding(rich_desc)
+    function_info = {
+      'function_name': tool['name'],
+      'description': function_description_openai,
+      'embedding': function_embedding,
+      'examples': function_examples,
+      'arguments': function_arguments
+    }
+    data.append(function_info)
   
-  # with open(json_file_path, 'w') as json_file:
-  #     json.dump(data, json_file, indent=4)
+  with open(json_file_path, 'w') as json_file:
+      json.dump(data, json_file, indent=4)
 
   query = "what are my work list?"
   related_tools = model.get_related_tools(query)

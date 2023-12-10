@@ -23,11 +23,12 @@ def compare_objects(obj_a, obj_b):
             if not compare_objects(a, b):
                 return False
         return True
-
-    else:
+    elif isinstance(obj_a, str) and isinstance(obj_b, str):
         if obj_a in obj_b or obj_b in obj_a:
             return True
         return False
+    else:
+        return obj_a==obj_b
     
 def score_calc(map1,map2):
     score=0
