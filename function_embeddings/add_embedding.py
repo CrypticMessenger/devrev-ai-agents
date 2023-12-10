@@ -3,8 +3,8 @@
 
 import time
 import json
-from schema import *
-from connectdb import connectdb
+from .schema import *
+from .connectdb import connectdb
 from pymilvus import connections, utility
 
 def add_embedding(embedding_data:json)->None:

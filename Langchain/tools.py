@@ -1,5 +1,8 @@
 
 from langchain.agents import AgentType, initialize_agent, AgentExecutor,Tool, AgentOutputParser, LLMSingleActionAgent
+from function_embeddings.OpenAIHelpers import OpenAIWrapper
+
+from openai import OpenAI
 
 def generate_functions(data):
     all_tool_functions = []
@@ -27,8 +30,6 @@ def generate_functions(data):
         generated_function = local_namespace[tool['name']]
         globals()[tool['name']] = generated_function
         all_tool_functions.append(generated_function)
-
-        print(function_template)
     return all_tool_functions
 
 def create_tools(tools_json):
@@ -57,18 +58,32 @@ def create_tools(tools_json):
         )
         tools.append(tool)
 
-    def query_user(llm_input):
-        user_input = input(llm_input)
-        return user_input
+    def get_related_tools_function(query):
+        client = OpenAI(api_key = "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")
+        model = OpenAIWrapper(client)
+        return model.get_related_tools(query)[:3]
+
+    def get_tool_arguments_function(tool_name):
+        for i in range(len(tools_json['tools'])):
+            if tools_json['tools'][i]['name'] in tool_name:
+                return f"{tools_json['tools'][i]['arguments']}"
+        return "what?"
+        
 
 
-    # user_query_tool = Tool(
-    #     name = "query_user",
-    #     func = query_user,
-    #     description = "Use this function to ask user for more some clarification"
-    # )
+    get_related_tools = Tool(
+        name = "get_related_tools",
+        func = get_related_tools_function,
+        description = "Use this function to find related tool for the query"
+    )
 
-    # tools = tools + [user_query_tool]
+    get_tool_arguments = Tool(
+        name = "get_tool_arguments",
+        func = get_tool_arguments_function,
+        description = "Use this function to find tool arguments"
+    )
+
+    tools = tools + [get_related_tools,get_tool_arguments]
 
     print("Tools created")
     return tools
