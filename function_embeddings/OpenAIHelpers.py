@@ -3,6 +3,9 @@ from openai import OpenAI
 from .tools import create_description,create_description_with_example
 import json 
 import numpy as np
+from .add_embedding import add_embedding
+from .get_embedding import search_similar
+from .update_embedding import update_embedding
 
 
 def cosine_similarity(a, b):
@@ -12,10 +15,7 @@ def compute_tool_similarity(tool_embedding, query_embedding):
   # Compute cosine similarity between the tool names
   similarity_score = cosine_similarity(tool_embedding, query_embedding)
   return similarity_score.item()
-from tools import create_description,create_description_with_example
-from add_embedding import add_embedding
-from get_embedding import search_similar
-from update_embedding import update_embedding
+
 
 class OpenAIWrapper:
   def __init__(self,client,text_model="gpt-3.5-turbo-1106",embedding_model="text-embedding-ada-002"):
@@ -112,8 +112,6 @@ if __name__=="__main__":
   client = OpenAI(api_key = "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")
   model = OpenAIWrapper(client)
   # tool = all_tools['tools'][0]
-  client = OpenAI(api_key = "your-api-key")
-  model = OpenAIWrapper(client,example_template=EXAMPLE_TEMPLATE)
   tool = all_tools['tools'][0]
   # print(tool)
   function_description_openai = model.generate_description(tool)

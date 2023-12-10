@@ -3,12 +3,11 @@
 
 import time
 import json
-from schema import *
-from connectdb import connectdb
+from .schema import *
+from .connectdb import connectdb
 from pymilvus import connections
 
 def update_embedding(embedding_data:json)->None:
-
     try:
         model = embedding_data['model']
         collection = connectdb(model)
