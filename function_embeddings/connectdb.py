@@ -2,13 +2,13 @@ import configparser
 from pymilvus import connections, utility
 from pymilvus import Collection
 import json
-from .schema import *
+from schema import *
 import sys
 
 def connectdb(MODEL:str):
     try:
         # connect to milvus
-        
+    
         cfp = configparser.RawConfigParser()
         cfp.read('config.ini')
         milvus_uri = cfp.get('example', 'uri')
@@ -23,6 +23,8 @@ def connectdb(MODEL:str):
         collection_name = "devrev"+'_'+MODEL
         print(f"Connecting to collection if exists, else create collection: {collection_name}")
         check_collection = utility.has_collection(collection_name)
+
+        collection = None
 
         if check_collection:
             collection = Collection(collection_name)
