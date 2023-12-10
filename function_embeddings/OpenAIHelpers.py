@@ -68,17 +68,17 @@ class OpenAIWrapper:
     return result
 
 
-def generate_description(tool):
-  prompt = f"You've been provided with information about a tool: {tool}. This tool encompasses the tool name, description, supported arguments, and corresponding argument types and descriptions. Utilize these details to generate a precise and concise description that fully explains the tool's purpose. Avoid including specific use-cases; instead, focus on providing an overview of all potential functionalities and aspects that the tool can address. The goal is to create a precise and concise description that thoroughly communicates the tool's functionality. Keep the description concise, short (less than 100 words) and up to the point"
-  
-  response = self.client.chat.completions.create(
-    model= self.text_model,
-    messages=[
-      {"role": "user", "content": prompt},
-    ]
-  )
+  def generate_description(self, tool):
+    prompt = f"You've been provided with information about a tool: {tool}. This tool encompasses the tool name, description, supported arguments, and corresponding argument types and descriptions. Utilize these details to generate a precise and concise description that fully explains the tool's purpose. Avoid including specific use-cases; instead, focus on providing an overview of all potential functionalities and aspects that the tool can address. The goal is to create a precise and concise description that thoroughly communicates the tool's functionality. Keep the description concise, short (less than 100 words) and up to the point"
+    
+    response = self.client.chat.completions.create(
+      model= self.text_model,
+      messages=[
+        {"role": "user", "content": prompt},
+      ]
+    )
 
-  return response
+    return response.choices[0].message.content
 
   
 
@@ -86,11 +86,14 @@ if __name__=="__main__":
   client = OpenAI(api_key = "your-api-key")
   model = OpenAIWrapper(client,example_template=EXAMPLE_TEMPLATE)
   tool = all_tools['tools'][0]
-  function_description = create_description(tool)
-  examples = model.generate_examples(function_description=function_description,number_of_examples=3)
-  function_description = create_description_with_example(function_description,examples)
-  model.add_functionDB(tool['name'],function_description) #check
+  # print(tool)
+  function_description_openai = model.generate_description(tool)
+  print(function_description_openai)
+  # function_description = create_description(tool)
+  # examples = model.generate_examples(function_description=function_description,number_of_examples=3)
+  # function_description = create_description_with_example(function_description,examples)
+  # model.add_functionDB(tool['name'],function_description) #check
   # query = "what are my work list?"
-  query = "Prioritize my P0 issues and add them to the current sprint."
-  related_tools = model.get_related_tools(query)
-  print("Related tools for query are: ",related_tools)
+  # query = "Prioritize my P0 issues and add them to the current sprint."
+  # related_tools = model.get_related_tools(query)
+  # print("Related tools for query are: ",related_tools)
