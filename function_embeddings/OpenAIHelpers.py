@@ -1,11 +1,13 @@
 from constants import EXAMPLE_TEMPLATE, all_tools
 from openai import OpenAI
+from pymilvus import connections
 from .tools import create_description,create_description_with_example
 import json 
 import numpy as np
 from .add_embedding import add_embedding
 from .get_embedding import search_similar
 from .update_embedding import update_embedding
+from .connectdb import connectdb, disconnectdb
 
 
 def cosine_similarity(a, b):
@@ -15,10 +17,6 @@ def compute_tool_similarity(tool_embedding, query_embedding):
   # Compute cosine similarity between the tool names
   similarity_score = cosine_similarity(tool_embedding, query_embedding)
   return similarity_score.item()
-from .tools import create_description,create_description_with_example
-from .add_embedding import add_embedding
-from .get_embedding import search_similar
-from .update_embedding import update_embedding
 
 class OpenAIWrapper:
   def __init__(self,client,text_model="gpt-3.5-turbo-1106",embedding_model="text-embedding-ada-002"):
@@ -42,35 +40,52 @@ class OpenAIWrapper:
     text = text.replace("\n", " ")
     return self.client.embeddings.create(input = [text], model=self.embedding_model).data[0].embedding
   
-  def add_functionDB(self,function_name,function_description):
+  def add_functionDB(self,function_name,function_description, function_examples, function_arguments):
+    # check if the function_exists or not
+    collection = connectdb('openai')
+
+    boolean_expr = f'function_name=="{function_name}"'
+    res = collection.query(
+      expr = boolean_expr,
+      output_fields = ['function_name', 'description', 'embedding', 'examples','arguments'],
+      limit=1
+    )
+
+    # if function alreadys exists in the db, simply return that
+    if len(res) != 0:
+      return res
+    
+    disconnectdb()
+
     # implmeent logic of insertion
     embedding = self.get_embedding(function_description)
     data = {
-      'name':function_name,
-      'model':'openai',
+      'function_name':function_name,
       'description':function_description,
-      'embedding':embedding
+      'embedding':embedding,
+      'examples':function_examples,
+      'arguments':function_arguments
     }
 
-    response = add_embedding(data)
+    response = add_embedding(data, model='openai')
 
     return response
   
-  def update_functionDB(self,function_name,function_description,embedding):
+  def update_functionDB(self,function_name,function_description,embedding, function_examples, function_arguments):
     ## implement logic of updation
     embedding = self.get_embedding(function_description)
     data = {
-      'name':function_name,
-      'model':'openai',
-      'description':function_description,
-      'embedding':embedding
+        'function_name':function_name,
+        'description':function_description,
+        'embedding':embedding,
+        'examples':function_examples,
+        'arguments':function_arguments
     }
 
-    response = update_embedding(data)
+    response = update_embedding(data, model='openai')
 
     return response
   
-
   def cosine_similarity(a, b):
     return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
 

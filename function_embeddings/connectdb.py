@@ -45,3 +45,5 @@ def connectdb(MODEL:str):
         print(f"Something went wrong: {e}")
         return None
 
+def disconnectdb():
+    connections.disconnect('default')
