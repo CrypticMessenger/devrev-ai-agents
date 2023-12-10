@@ -1,0 +1,145 @@
+{
+  "works_list": [
+    {
+      "applies_to_part": {
+        "desc": "Filters for work belonging to any of the provided parts.",
+        "type": "Array[String]",
+        "example": ["FEAT-123", "ENH-123", "PROD-123", "CAPL-123"]
+      }
+    },
+    {
+      "created_by": {
+        "desc": "Filters for work created by any of these users",
+        "type": "Array[String]",
+        "example": ["DEVU-123"]
+      }
+    },
+    {
+      "owned_by": {
+        "desc": "Filters for work owned by any of these users",
+        "type": "Array[String]",
+        "example": ["DEVU-123"]
+      }
+    },
+    {
+      "issue.rev_orgs": {
+        "desc": "Filters for issues with any of the provided Rev organizations",
+        "type": "Array[String]",
+        "example": ["REV-123"]
+      }
+    },
+    {
+      "issue.priority": {
+        "desc": "Filters for issues with any of the provided priorities",
+        "type": "Array[String]",
+        "allowed": ["p0", "p1", "p2", "p3"]
+      }
+    },
+    {
+      "limit": {
+        "desc": "The maximum number of works to return.",
+        "type": "int32",
+        "example": "50"
+      }
+    },
+    {
+      "stage.name": {
+        "desc": "Filters for records in the provided stage(s) by name",
+        "type": "Array[String]",
+        "example": ["New", "In Progress", "Done"]
+      }
+    },
+    {
+      "ticket.needs_response": {
+        "desc": "Filters for tickets that need a response",
+        "type": "Boolean"
+      }
+    },
+    {
+      "ticket.severity": {
+        "desc": "Filters for tickets with any of the provided severities",
+        "type": "Array[String]",
+        "allowed": ["blocker", "high", "low", "medium"]
+      }
+    },
+    {
+      "ticket.source_channel": {
+        "desc": "Filters for tickets with any of the provided source channels",
+        "type": "Array[String]",
+        "example": ["email", "phone", "web"]
+      }
+    },
+    {
+      "types": {
+        "desc": "Filters for work of the provided types.",
+        "type": "Array[String]",
+        "allowed": ["issue", "ticket", "task"]
+      }
+    }
+  ],
+  "summarize_objects": [
+    {
+      "objects": {
+        "desc": "List of objects to summarize",
+        "type": "Array[Object]",
+        "example": [
+          { "name": "object1", "type": "object1" },
+          { "name": "object2", "type": "object2" }
+        ]
+      }
+    }
+  ],
+  "prioritize_objects": [
+    {
+      "objects": {
+        "desc": "A list of objects to be prioritized",
+        "type": "Array[Object]",
+        "example": [{ "id": "123456", "type": "work" }]
+      }
+    }
+  ],
+  "add_work_items_to_sprint": [
+    {
+      "work_ids": {
+        "desc": "A list of work item IDs to be added to the sprint.",
+        "type": "Array[String]",
+        "example": ["123456", "654321"]
+      }
+    },
+    {
+      "sprint_id": {
+        "desc": "The ID of the sprint to which the work items should be added",
+        "type": "String",
+        "example": ["123456"]
+      }
+    }
+  ],
+  "get_sprint_id": [],
+  "get_similar_work_items": [
+    {
+      "work_id": {
+        "desc": "The ID of the work item for which you want to find similar items",
+        "type": "String",
+        "example": ["1234567890"]
+      }
+    }
+  ],
+  "search_object_by_name": [
+    {
+      "query": {
+        "desc": "The search string, could be for example customer's name, part name, user name.",
+        "type": "String"
+      }
+    }
+  ],
+  "create_actionable_tasks_from_text": [
+    {
+      "text": {
+        "desc": "The text from which the actionable insights need to be created.",
+        "type": "String",
+        "example": "The text from which the actionable insights need to be created."
+      }
+    }
+  ],
+  "who_am_i": []
+}

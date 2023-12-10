@@ -1,0 +1,12 @@
+{
+    "works_list": "Returns a list of work items matching the request",
+    "summarize_objects": "Summarizes a list of objects. The logic of how to summarize a particular object type is an internal implementation detail.",
+    "prioritize_objects": "Returns a list of objects sorted by priority. The logic of what constitutes priority for a given object is an internal implementation detail.",
+    "add_work_items_to_sprint": "Adds the given work items to the sprint",
+    "get_sprint_id": "Returns the ID of the current sprint",
+    "get_similar_work_items": "Returns a list of work items that are similar to the given work item",
+    "search_object_by_name": "Given a search string, returns the id of a matching object in the system of record. If multiple matches are found, it returns the one where the confidence is highest.",
+    "create_actionable_tasks_from_text": "Given a text, extracts actionable insights, and creates tasks for them, which are kind of a work item.",
+    "who_am_i": "Returns the ID of the current user"
+  }
+  
