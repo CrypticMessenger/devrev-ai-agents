@@ -126,7 +126,7 @@ class Inference:
             allowed_tools=self.tool_names
         )
 
-        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True)
+        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=False)
 
     def invoke_agent(self, input_question):
         print("Agent Invoked")

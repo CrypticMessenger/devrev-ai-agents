@@ -25,7 +25,9 @@ def compare_objects(obj_a, obj_b):
         return True
 
     else:
-        return obj_a == obj_b
+        if obj_a in obj_b or obj_b in obj_a:
+            return True
+        return False
     
 def score_calc(map1,map2):
     score=0

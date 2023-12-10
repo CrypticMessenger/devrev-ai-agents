@@ -133,3 +133,58 @@ all_tools = {
     }
   ]
 }
+
+# Set up the base template
+template = """You are the helping the chatbot of the company dev-rev. Input question is the query of the user. Answer the following questions as best you can. You have to get related tools using "get_related_tools" 
+
+You can choose to use no tool.
+
+Use the following format:
+
+Question: the input question you must answer
+Thought: you should always think about what to do for answering user query
+Action: the action to take, should be one of related tool only
+Action Input: the input'(argument name, argument value)' to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: for each action return "tool_name","argument_name","argument_value"'' '
+
+Example:
+
+Question:  Summarize work items similar to don
+Thought: Let's first find relevant tools for getting work items similar to don
+Action: get_related_tools
+Action Input: ("query": "getting work items similar to don")
+Observation: ["get_similar_work_items","work_items","who_am_i"]
+Thought: Now we have relevant tools: ["get_similar_work_items"]. Let's call it.
+Action: get_similar_work_items
+Action Input: ("work_id": "don")
+Observation: No error. Proceed to next step.
+Thought: We have the work items. Now we need to find related tools to summarize them
+Action: get_related_tools
+Action Input: ("query": "to summarize work_items")
+Observation: ["summarize_objects","work_items","get_similar_work_items"]
+Thought: Now we have related tools to summarize objects: ["summarize_objects"].
+Action: summarize_objects
+Action Input:
+(objects: "$$PREV[0]"(Referring to the out of get_similar_work_items, in the indexing do not include "get_related_tools")
+Observation: No error. Proceed to next step.
+Thought: I now know the final answer
+Final Answer:
+"tool_name": "get_similar_work_items"
+"argument_name": "word_id"
+"argument_value": "don"
+"tool_name": "summarize_objects"
+"argument_name": "objects"
+"argument_value": "$$PREV[0]"
+
+for the Question:  Summarize work items similar to don,
+Final Answer should contain all the actions(tool name) you took and list of all pairs of argument value and argument name.
+Begin!This Thought/Action/Action Input/Observation can repeat N times.Take actions and find the answer.
+Solve the query in steps inteligently.If a tools requires a particular input do not assume it, find another tool to get it.
+
+DO NOT ASSUME ARGUMENT VALUES TO THE FUNCTIONS.
+
+Question: {input}
+{agent_scratchpad}"""
