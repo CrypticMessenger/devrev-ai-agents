@@ -42,7 +42,7 @@ if queries_with_empty_map:
 else:
     print("No queries with an empty map as value found.")
 
-EXP_DIR = "Results"
+EXP_DIR = "devrev-ai-agents/Results"
 
 
 experiment = ExperimentPipeline(inference_function,result_map, objective_similarity, EXP_DIR, original_df)

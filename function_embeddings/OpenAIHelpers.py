@@ -15,7 +15,10 @@ def compute_tool_similarity(tool_embedding, query_embedding):
   # Compute cosine similarity between the tool names
   similarity_score = cosine_similarity(tool_embedding, query_embedding)
   return similarity_score.item()
-
+from .tools import create_description,create_description_with_example
+from .add_embedding import add_embedding
+from .get_embedding import search_similar
+from .update_embedding import update_embedding
 
 class OpenAIWrapper:
   def __init__(self,client,text_model="gpt-3.5-turbo-1106",embedding_model="text-embedding-ada-002"):
