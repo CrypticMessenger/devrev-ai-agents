@@ -123,24 +123,23 @@ all_tools = {
     },
     {
       "name": "who_am_i",
-      "description": "Returns the ID of the current user"
+      "description": "Returns the ID of the current user."
     }
   ]
 }
 
 
 # Set up the base template
-template = """You are the helping the chatbot of the company dev-rev. Input question is the query of the user. Answer the following questions as best you can. You have access to the following tools:
-
-{tools}
+template = """You are the helping the chatbot of the company dev-rev. Input question is the query of the user. Answer the following questions as best you can. You have to get related tools using "get_related_tools" 
 
 You can choose to use no tool.
+
 If you feel not enough information is present.
 Use the following format:
 
 Question: the input question you must answer
 Thought: you should always think about what to do
-Action: the action to take, should be one of [{tool_names}]
+Action: the action to take, should be one of related tool only
 Action Input: the input'(argument name, argument value)' to the action
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
@@ -149,39 +148,44 @@ Final Answer: for each action return "tool_name","argument_name","argument_value
 
 Example:
 
-Question: Summarize high severity tickets from the customer UltimateCustomer.
-Thought: Let's first find the customer "UltimateCustomer".
-Action: search_object_by_name
-Action Input: (query: "UltimateCustomer")
+Question:  Summarize work items similar to don
+Thought: Let's first find relevant tools for getting work items similar to don
+Action: get_related_tools
+Action Input: ("query": "getting work items similar to don")
 Observation: No error. Proceed to next step.
-Thought: Now that we've located the customer, we need to fetch the high severity tickets related to them.
-Action: works_list
-Action Input:
-(ticket.rev_org: ["$$PREV[0]"] (Referring to the previously retrieved customer ID),
-ticket.severity: ["high"],
-type: ["ticket"])
-Observation: Retrieves a list of high severity tickets associated with the customer "UltimateCustomer".
-Thought: To get a better understanding of these high severity tickets, let's summarize 'em.
+Thought: Now we have relevant tools: ["get_similar_work_items"]. Find it's argument
+Action: get_tool_arguments
+Action Input: ("tool_name": "get_similar_work_items")
+Observation: Now we have the tool to complete the Thought. Proceed to next step.
+Thought: We need to fill appropriate arguments for the relevant tool "get_similar_work_items" to get similar work items
+Action: get_similar_work_items
+Action Input: ("work_id": "don")
+Observation: No error. Proceed to next step.
+Thought: We have the work items. Now we need to find related tools to summarize them
+Action: get_related_tools
+Action Input: ("query": "to summarize them")
+Observation: No error. Proceed to next step.
+Thought: we have similar work items to don and now we have related tools to summarize objects: ["summarize_objects"]. Find argument
+Action: get_tool_arguments
+Action Input:("tool_name": "summarize_objects")
+Observation: Now we have the tool to complete the Thought. Proceed to next step.
+Thought: We need to fill appropriate arguments for the relevant tool "summarize_objects" to summarize the objects.
 Action: summarize_objects
-Action Input: (objects: "$$PREV[1]") (Referring to the list of high severity tickets)
-Observation: Provides a summarized view of the high severity tickets associated with the customer "UltimateCustomer".
+Action Input:
+(objects: "$$PREV[0]"(Referring to the previously retrived objects)
+Observation: No error. Proceed to next step.
+Thought: I now know the final answer
 Final Answer:
-"tool_name": "search_object_by_name"
-"argument_name": "query"
-"argument_value": "UltimateCustomer"
-"tool_name": "works_list"
-"argument_name": "ticket.rev_org"
-"argument_value": ["$$PREV[0]"]
-"argument_name": "ticket.severity"
-"argument_value": ["high"]
-"argument_name": "type"
-"argument_value": ["ticket"]
+"tool_name": "get_similar_work_items"
+"argument_name": "word_id"
+"argument_value": "don"
 "tool_name": "summarize_objects"
-"argument_name": "objects",
-"argument_value": "$$PREV[1]"
+"argument_name": "objects"
+"argument_value": "$$PREV[0]"
 
-Final Answer should contain all the actions(tool name) you took and list of all pairs of argument value and argument name in json as shown above.
-Begin! Remember to just output the final result. No blabbering
+for the Question:  Summarize work items similar to don,
+Final Answer should contain all the actions(tool name) you took and list of all pairs of argument value and argument name.
+Begin!This Thought/Action/Action Input/Observation can repeat N times.
 
 Question: {input}
 {agent_scratchpad}"""

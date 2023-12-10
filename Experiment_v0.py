@@ -29,8 +29,8 @@ def process_output(input_string) :
 
 # Get inference
 
-original_df = pd.read_csv("/Users/ambrose_/Desktop/Inter-IIT-agents/agent007/devrev-ai-agents/Data/test_v0.csv")
-df = original_df.sample(n=1, random_state=36)
+original_df = pd.read_csv("Data/givenExamples.csv")
+df = original_df.sample(n=5, random_state=35)
 df = df.reset_index(drop=True)
 
 df['Output_map'] = df['Output'].apply(process_output)
@@ -46,7 +46,7 @@ if queries_with_empty_map:
 else:
     print("No queries with an empty map as value found.")
 
-EXP_DIR = '/Users/ambrose_/Desktop/Inter-IIT-agents/agent007/devrev-ai-agents/Results'
+EXP_DIR = "devrev-ai-agents\Results"
 
 inference_args = {
     "alpha": [0.1],

@@ -2,7 +2,7 @@ import configparser
 from pymilvus import connections, utility
 from pymilvus import Collection
 import json
-from schema import *
+from .schema import *
 import sys
 
 def connectdb(MODEL:str):

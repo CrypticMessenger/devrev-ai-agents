@@ -3,9 +3,9 @@
 
 import time
 import json
-from schema import *
+from .schema import *
 from pymilvus import connections
-from connectdb import connectdb
+from .connectdb import connectdb
 
 def load_db(collection):
     # load collection

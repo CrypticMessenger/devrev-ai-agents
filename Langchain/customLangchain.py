@@ -130,5 +130,6 @@ class Inference:
 
     def invoke_agent(self, input_question):
         print("Agent Invoked")
+        print(f"Input Question: {input_question}")
         output = self.agent_executor.invoke({"input": input_question})
         return output['output']
