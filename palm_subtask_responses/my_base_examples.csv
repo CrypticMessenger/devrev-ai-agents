@@ -1,0 +1,307 @@
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Summarize the work items similar to TKT-123
+Tool:summarize_objects with args:
+- objects (Array[Object]):The objects to summarize
+Past Actions/Knowledge:
+- Prioritize the work items similar to TKT-123: prioritize_work_items
+- Get all similar work items to TKT-123: get_similar_work_items
+- the ID of the current User: who_am_i
+- the current sprint:get_current_sprint","{""result"":[(""objects"",[""get_similar_work_items""])],""missing_action"":""""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get my P0 issues on part DEV-PART-123
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [(""owned_by"",[""who_am_i""]),(""issue.priority"",[""p0""]),(""applies_to_part"",[""DEV-PART-123""])],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Summarize my P0 issues
+Tool:summarize_objects with args:
+- objects (Array[Object]):The objects to summarize
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [],""missing_action"": ""Get my P0 issues""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Prioritize my P0 issues
+Tool:prioritize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [],""missing_action"": ""Get my P0 issues""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Send an email to User-123 regarding issue I-123.
+Tool: send_email with args:
+- to (String): The email address of the recipient
+- from (String): The email address of the sender
+- subject (String): The subject of the email (optional)
+- body (String): The body of the email
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details","{""result"": [], ""missing_action"": ""Summarize issue I-123""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get all issues
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:","{""result"": [],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Send an email to User-123 regarding issue I-123.
+Tool: send_email with args:
+- to (String): The email address of the recipient
+- subject (String): The subject of the email (optional)
+- body (String): The body of the email
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get user details of User-123""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive:Get my P0 issues on all objects containing the word ""AI""
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [],""missing_action"": ""Get all parts containing the word ""AI""""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get my P0 issues on all objects containing the word ""AI""
+Tool:get_items with args:
+- applies_to_part (String): Filters for work belonging to any of the provided parts.
+- owned_by (String): Filters for work owned by any of these users
+- created_by (String): Filters for work created by any of these users 
+- issue.priority (String): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i","{""result"": [(""owned_by"",""who_am_i""),(""issue.priority"",""p0""),(""applies_to_part"",""get_objects_by_keyword"")],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Send an email to User-123 regarding issue I-123.
+Tool: send_email with args:
+- to (String): The email address of the recipient
+- from (String): The email address of the sender
+- subject (String): The subject of the email (optional)
+- body (String): The body of the email
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details
+- Summarize issue I-123: summarize_objects
+- the ID of the current User: who_am_i","{""result"": [(""to"", ""get_user_details""), (""from"", ""who_am_i""), (""subject"", ""Regarding issue I-123""), (""body"", ""summarize_objects"")],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Dial up the user User-123
+Tool: call_user with args:
+- contact_details (Object): The contact details of the user
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get user details of User-123""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Dial up the user User-123
+Tool: call_user with args:
+- contact_details (Object): The contact details of the user
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""contact_details"", ""get_user_details"")], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Pay user User-123 his balance amount
+Tool: pay_user with args:
+- contact_details (Object): The contact details of the user
+- amount (Number): The amount to pay the user
+Past Actions/Knowledge:
+- Get balance amount of User-123: get_user_balance
+- Get user details of User-123: get_user_details
+- the current sprint: get_current_sprint","{""result"": [(""contact_details"", ""get_user_details""), (""amount"", ""get_user_balance"")], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Pay user User-123 his balance amount
+Tool: pay_user with args:
+- contact_details (Object): The contact details of the user
+- amount (Number): The amount to pay the user
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get balance amount of User-123""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Pay user User-123 his $100
+Tool: pay_user with args:
+- contact_details (Object): The contact details of the user
+- amount (Number): The amount to pay the user
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""contact_details"", ""get_user_details""), (""amount"", 100)], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Close all unresolved issues
+Tool: close_issues with args:
+- issues (Array[Object]): List of issues to close
+Past Actions/Knowledge:","{""result"": [], ""missing_action"": ""Get the list of unresolved issues""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Move all tasks to the next sprint
+Tool: move_issues with args:
+- issues (Array[Object]): List of issues to move
+- destination_sprint (String): The sprint to move the issues to
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the next sprint: get_next_sprint","{""result"": [], ""missing_action"": ""Get the list of all tasks""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Move all unresolved issues to the next sprint
+Tool: move_issues with args:
+- issues (Array[Object]): List of issues to move
+- destination_sprint (String): The sprint to move the issues to
+Past Actions/Knowledge:
+- Get List of unresolved issues: get_unresolved_issues
+- the ID of the current User: who_am_i
+- the next sprint: get_next_sprint","{""result"": [(""issues"", [""get_unresolved_issues""]), (""destination_sprint"", ""get_next_sprint"")], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get my issues on all objects made by MAN-123
+Tool:get_items with args:
+- applies_to_part (String): Filters for work belonging to any of the provided parts.
+- owned_by (String): Filters for work owned by any of these users
+- created_by (String): Filters for work created by any of these users 
+- issue.priority (String): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""owned_by"",""who_am_i""),(""created_by"",""MAN-123"")],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get my issues on all objects made by my Manager
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get user details of my Manager""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get issues made by users in my team
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:","{""result"": [],""missing_action"": ""Get user details of my team""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get issues made by users U-123 and U-456
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i","{""result"": [(""created_by"", [""U-123"", ""U-456""])],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Get issues owned by users U-123 and U-456 and with priorities P0 and P1
+Tool:get_work_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""created_by"", [""U-123"", ""U-456""]), (""issue.priority"":[""p0"", ""p1""])],""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Summarize my open tasks
+Tool: summarize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:","{""result"": [], ""missing_action"": ""Get my open tasks""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Assign a QA tester to Project P-789
+Tool: assign_user with args:
+- task_key (String): The key of the task to assign
+- user_key (Array[String]): The key of the QA tester to assign to the issue
+Past Actions/Knowledge:
+- List of available QA testers: get_available_qa_testers
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""task_key"", ""P-789""), (""user_key"", [""get_available_qa_testers""])], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Create a new high-priority issue from action item creted from T in the current backlog
+Tool:create_issue with args:
+- summary (String): A brief, one-sentence description of the issue
+- description (String): A detailed description of the issue
+- priority (String): Priority of the issue allowing: [""High"", ""Medium"", ""Low"", ""Blocker""]
+- backlog (String): The backlog to add the issue to (optional)
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get action items created from T: get_action_items_from_text
+- Get Current backlog: get_backlog_issues
+- Get the ID of the current User: who_am_i","{""result"": [(""summary"", """"), (""description"", """"), (""priority"", ""High""), (""backlog"", ""get_backlog_issues"")], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Create an action items created from transcript T
+Tool: create_actionable_tasks_from_text with args:
+- text (String):The text from which the actionable insights need to be created
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get action items created from T: get_action_items_from_text
+- Get Current backlog: get_backlog_issues
+- Get the ID of the current User: who_am_i","{""result"": [(""text"", ""T"")], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Assign developers to all tasks in the backlog
+Tool: assign_users with args:
+- tasks (Array[Object]): List of tasks to assign
+- users (Array[String]): List of developers to assign to the tasks
+Past Actions/Knowledge:
+- List of developers: get_available_developers
+- List of tasks in the backlog: get_backlog_tasks
+- the ID of the current User: who_am_i","{""result"": [(""tasks"", ""get_backlog_tasks""), (""users"", [""get_available_developers""])], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Summarize the tasks completed by my team
+Tool: summarize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get completed tasks by my team""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Create a new issue with the summary ""Fix bug in AI"" and the description ""This is a bug in AI""
+Tool:create_issue with args:
+- summary (String): A brief, one-sentence description of the issue
+- description (String): A detailed description of the issue
+- priority (String): Priority of the issue allowing: [""High"", ""Medium"", ""Low"", ""Blocker""]
+- backlog (String): The backlog to add the issue to (optional)
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""summary"", ""Fix bug in AI""), (""description"", ""This is a bug in AI"")], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Close all unresolved support tickets
+Tool: close_issues with args:
+- issues (Array[Object]): List of issues to close
+Past Actions/Knowledge:
+- Get the list of all users: get_all_users","{""result"": [], ""missing_action"": ""Get the list of unresolved support tickets""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Close all unresolved bugs in the system
+Tool: close_issues with args:
+- issues (Array[Object]): List of issues to close
+- issue.type (String): Filters for issues by the type [""Bug"", ""Feature"", ""Optimisation""] (optional)
+- issue.status (String): Filters for issues by the status allowing [""Unresolved"", ""Resolved"", ""Abandoned""] (optional)
+Past Actions/Knowledge:
+- Get the list of all bugs: get_all_bugs","{""result"": [(""issues"", [""get_all_bugs""]), (""issue.type"", [""Bug""]), (""issue.status"", [""Unresolved""])], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Assign a UI/UX designer to tasks in sprint S-456
+Tool: assign_user with args:
+- task_keys (Array[String]): The keys of the tasks to assign
+- user_key (Array[String]): The key of the UI/UX designer to assign to the issue
+Past Actions/Knowledge:
+- List of available UI/UX designers: get_available_workers
+- Get tasks in sprint S-456: get_tasks_in_sprint
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""task_keys"", ""get_tasks_in_sprint""), (""user_key"", [""get_available_workers""])], ""missing_action"": """"}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Assign a UI/UX designer to tasks in sprint S-456
+Tool: assign_user with args:
+- task_keys (Array[String]): The keys of the tasks to assign
+- user_key (Array[String]): The key of the UI/UX designer to assign to the issue
+Past Actions/Knowledge:
+- List of available UI/UX designers: get_available_workers
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get tasks in sprint S-456""}"
+"You're a bot who is supposed to solve some tasks given a tool and directive, you strictly use values in the Past Actions or the provided directive. If there is some information missing you return action to get the missing information.
+Directive: Create a new Blocking issue with the summary ""Implement feature X"" and the description ""Details about implementing feature X""
+Tool:create_issue with args:
+- summary (String): A brief, one-sentence description of the issue
+- description (String): A detailed description of the issue
+- priority (String): Priority of the issue allowing: [""High"", ""Medium"", ""Low"", ""Blocker""]
+- backlog (String): The backlog to add the issue to (optional)
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""summary"", ""Implement feature X""), (""description"", ""Details about implementing feature X""), (""priority"", ""Blocker"")], ""missing_action"": """"}"
