@@ -10,7 +10,7 @@ def objective_similarity(list1,list2):
 
 
 # Define Inference Function
-def inference_function(query, alpha, beta):
+def inference_function(query):
     return "response"
 
 def process_output(input_string) :
