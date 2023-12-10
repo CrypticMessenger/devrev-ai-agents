@@ -1,3 +1,6 @@
+import json
+import copy
+
 def compare_objects(obj_a, obj_b):
     if isinstance(obj_a, dict) and isinstance(obj_b, dict):
         if len(obj_a) != len(obj_b):
@@ -43,34 +46,38 @@ def score_calc(map1,map2):
 
 def processing_list(list):
   prev_outputs = [None] * len(list)
+  list_for_score = copy.deepcopy(list)
   for i, tool in enumerate(list):
     if(tool['arguments']):
       for arg in tool['arguments']:
           if (arg['argument_value']) and '$$PREV[' in arg['argument_value']:
               prev_idx = int(arg['argument_value'].split('$$PREV[')[1][0])
+              tool_str=json.dumps(list[prev_idx])
+              idx=tool['arguments'].index(arg)
+              list_for_score[i]['arguments'][idx]['argument_value']=tool_str
               if prev_idx == i:
                  arg['argument_value'] = tool['tool_name']
               else:
                 arg['argument_value'] = prev_outputs[prev_idx]
     prev_outputs[i] = tool['tool_name']
-  return list
+  return list,list_for_score
 
 # list1 = [{'tool_name': 'works_list', 'arguments': [{'argument_name': 'issue.priority', 'argument_value': ['p2']}]}, {'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[0]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[1]'}]}, {'tool_name': 'get_sprint_id', 'arguments': []}]
 # list2 = [{'tool_name': 'get_sprint_id', 'arguments': []},{'tool_name': 'create_actionable_tasks_from_text', 'arguments': [{'argument_name': 'text', 'argument_value': 'MeetingTranscript'}]},{'tool_name': 'add_work_items_to_sprint', 'arguments': [{'argument_name': 'work_ids', 'argument_value': '$$PREV[1]'}, {'argument_name': 'sprint_id', 'argument_value': '$$PREV[0]'}]}]
 
 def compare_lists_of_tools(list1, list2):
-    list1 = processing_list(list1)
-    list2 = processing_list(list2)
+    list1,list1_for_score = processing_list(list1)
+    list2,list2_for_score = processing_list(list2)
     map1 = {}
     map2 = {}
-    for item in list1:
+    for item in list1_for_score:
       tool_name = item['tool_name']
       if tool_name not in map1:
          map1[tool_name] = [item['arguments']]
       else:
          map1[tool_name].append(item['arguments'])
 
-    for item in list2:
+    for item in list2_for_score:
       tool_name = item['tool_name']
       if tool_name not in map2:
          map2[tool_name] = [item['arguments']]
