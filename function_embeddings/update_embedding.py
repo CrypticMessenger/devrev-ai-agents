@@ -5,9 +5,9 @@ import time
 import json
 from schema import *
 from connectdb import connectdb
-from pymilvus import connections, utility
+from pymilvus import connections
 
-def add_embedding(embedding_data:json)->None:
+def update_embedding(embedding_data:json)->None:
 
     try:
         model = embedding_data['model']
@@ -20,9 +20,9 @@ def add_embedding(embedding_data:json)->None:
         # begin
         t0 = time.time()
         entity = [[func_id],[model], [func_desc], [func_embeds]]
-        ins_resp = collection.insert(entity)
+        ins_resp = collection.upsert(entity)
         ins_rt = time.time() - t0
-        print(f"Succeed in insert {round(ins_rt,4)} seconds!")
+        print(f"Succeed in update {round(ins_rt,4)} seconds!")
 
         print("Flushing...")
         start_flush = time.time()
@@ -33,7 +33,7 @@ def add_embedding(embedding_data:json)->None:
         
         if len(collection.indexes) == 0:
             # build index
-            index_params = {"index_type": "AUTOINDEX", "metric_type": "L2", "params": {}}
+            index_params = {"index_type": "AUTOINDEX", "metric_type": "COSINE", "params": {}}
             t0 = time.time()
             print("Building AutoIndex...")
             if model=='openai':

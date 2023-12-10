@@ -3,12 +3,11 @@
 
 import time
 import json
-from .schema import *
+from schema import *
 from pymilvus import connections
-from .connectdb import connectdb
+from connectdb import connectdb
 
 def load_db(collection):
-    
     # load collection
     t0 = time.time()
     print("Loading collection...")
@@ -18,7 +17,7 @@ def load_db(collection):
 
     return
 
-def search_similar(embedding_data:json, metric_type, topk, level):
+def search_similar(embedding_data:json, metric_type="COSINE", topk=5, level=2):
     search_params = {"metric_type": metric_type,  "params": {"level": level}}
     topk = topk
 
@@ -52,7 +51,8 @@ def search_similar(embedding_data:json, metric_type, topk, level):
     t1 = time.time()
     print(f"Result:{results}")
     print(f"Search latency: {round(t1-t0, 4)} seconds!")
-
+    
+    collection.release()
     connections.disconnect("default")
 
     return results
