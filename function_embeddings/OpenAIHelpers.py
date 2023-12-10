@@ -68,6 +68,20 @@ class OpenAIWrapper:
     return result
 
 
+def generate_description(tool):
+  prompt = f"You've been provided with information about a tool: {tool}. This tool encompasses the tool name, description, supported arguments, and corresponding argument types and descriptions. Utilize these details to generate a precise and concise description that fully explains the tool's purpose. Avoid including specific use-cases; instead, focus on providing an overview of all potential functionalities and aspects that the tool can address. The goal is to create a precise and concise description that thoroughly communicates the tool's functionality. Keep the description concise, short (less than 100 words) and up to the point"
+  
+  response = self.client.chat.completions.create(
+    model= self.text_model,
+    messages=[
+      {"role": "user", "content": prompt},
+    ]
+  )
+
+  return response
+
+  
+
 if __name__=="__main__":
   client = OpenAI(api_key = "your-api-key")
   model = OpenAIWrapper(client,example_template=EXAMPLE_TEMPLATE)
