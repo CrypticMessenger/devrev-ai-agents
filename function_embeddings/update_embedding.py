@@ -7,18 +7,19 @@ from .schema import *
 from .connectdb import connectdb
 from pymilvus import connections
 
-def update_embedding(embedding_data:json)->None:
+def update_embedding(embedding_data:json,model:str)->None:
     try:
-        model = embedding_data['model']
         collection = connectdb(model)
 
-        func_id = embedding_data['name']
+        func_id = embedding_data['function_name']
         func_desc = embedding_data['description']
-        func_embeds = embedding_data['embedding']
+        func_embeds = embedding_data['embedding']   
+        function_examples = embedding_data['examples']
+        function_arguments = embedding_data['arguments']
 
         # begin
         t0 = time.time()
-        entity = [[func_id],[model], [func_desc], [func_embeds]]
+        entity = [[func_id],[model], [func_desc], [func_embeds],[function_examples],[function_arguments]]
         ins_resp = collection.upsert(entity)
         ins_rt = time.time() - t0
         print(f"Succeed in update {round(ins_rt,4)} seconds!")
