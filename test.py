@@ -1,6 +1,8 @@
 from function_embeddings.connectdb import connectdb
 from function_embeddings.get_all_tools import get_all_tools
 from function_embeddings.schema import *
+from function_embeddings.get_embedding import search_similar
+from function_embeddings.OpenAIHelpers import run
 
 data = [
     {
@@ -14044,6 +14046,13 @@ def add():
     collection.create_index(field_name=openai_embedding_field.name, index_params=index_params)
     collection.load()
 
-def get():
+def getall():
     r = get_all_tools('openai')
     print(len(r))
+
+def get():
+    embed_data = data[0]['embedding']
+    r = search_similar(embed_data, model='openai')
+    print(r)
+
+run()
