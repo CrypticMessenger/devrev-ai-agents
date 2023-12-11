@@ -62,6 +62,8 @@ class CustomOutputParser(AgentOutputParser):
 
 
     def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
+
+        print("llm_output: ",llm_output)
         # Check if agent should finish
         if "Final Answer:" in llm_output:
             return AgentFinish(
@@ -100,7 +102,11 @@ class CustomPromptTemplate(StringPromptTemplate):
         kwargs["tools"] = "\n".join([f"{tool.name}: {tool.description}" for tool in self.tools])
         # Create a list of tool names for the tools provided
         kwargs["tool_names"] = ", ".join([tool.name for tool in self.tools])
-        return self.template.format(**kwargs)
+
+        final_template = self.template.format(**kwargs)
+
+        print("final prompt: ", final_template)
+        return final_template
 
 
 class Inference:
@@ -127,7 +133,7 @@ class Inference:
             allowed_tools=self.tool_names
         )
 
-        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=False,max_iterations=5000)
+        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True,max_iterations=5000)
 
     def invoke_agent(self, input_question):
         print("Agent Invoked")
