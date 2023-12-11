@@ -3,9 +3,9 @@
 
 import time
 import json
-from schema import *
+from .schema import *
 from pymilvus import connections
-from connectdb import connectdb
+from .connectdb import connectdb
 
 def load_db(collection):
     # load collection
@@ -17,11 +17,10 @@ def load_db(collection):
 
     return
 
-def search_similar(embedding_data:json, metric_type="COSINE", topk=5, level=2):
+def search_similar(embedding_data:json,model:str, metric_type="COSINE", topk=5, level=2)->list:
     search_params = {"metric_type": metric_type,  "params": {"level": level}}
     topk = topk
 
-    model = embedding_data['model']
     collection = connectdb(model)
 
     # load db

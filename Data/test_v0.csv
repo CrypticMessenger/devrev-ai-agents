@@ -433,7 +433,8 @@ json","[
       }
     ]
   }
-]"
+]
+"
 "Given a search string for a part name, find matching objects and create actionable tasks from the retrieved information.","[
   {
     ""tool_name"": ""search_object_by_name"",
@@ -453,7 +454,8 @@ json","[
       }
     ]
   }
-]"
+]
+"
 "Extract actionable insights from a provided text, create tasks for them, and summarize the created tasks.","[
   {
     ""tool_name"": ""create_actionable_tasks_from_text"",
@@ -470,74 +472,6 @@ json","[
       {
         ""argument_name"": ""objects"",
         ""argument_value"": ""$$PREV[0]""
-      }
-    ]
-  }
-]"
-"Search for objects related to the customer ""ImportantClient,"" retrieve work items created by users DEVU-789 and DEVU-987, prioritize them by severity, and add the high-priority ones to the current sprint. Additionally, find similar work items to the highest priority one and create actionable tasks from their text.","[
-  {
-    ""tool_name"": ""search_object_by_name"",
-    ""arguments"": [
-      {
-        ""argument_name"": ""query"",
-        ""argument_value"": ""ImportantClient""
-      }
-    ]
-  },
-  {
-    ""tool_name"": ""works_list"",
-    ""arguments"": [
-      {
-        ""argument_name"": ""created_by"",
-        ""argument_value"": [""DEVU-789"", ""DEVU-987""]
-      },
-      {
-        ""argument_name"": ""issue.rev_orgs"",
-        ""argument_value"": [""$$PREV[0]""]
-      }
-    ]
-  },
-  {
-    ""tool_name"": ""prioritize_objects"",
-    ""arguments"": [
-      {
-        ""argument_name"": ""objects"",
-        ""argument_value"": ""$$PREV[1]""
-      }
-    ]
-  },
-  {
-    ""tool_name"": ""get_sprint_id"",
-    ""arguments"": []
-  },
-  {
-    ""tool_name"": ""add_work_items_to_sprint"",
-    ""arguments"": [
-      {
-        ""argument_name"": ""work_ids"",
-        ""argument_value"": ""$$PREV[2]""
-      },
-      {
-        ""argument_name"": ""sprint_id"",
-        ""argument_value"": ""$$PREV[3]""
-      }
-    ]
-  },
-  {
-    ""tool_name"": ""get_similar_work_items"",
-    ""arguments"": [
-      {
-        ""argument_name"": ""work_id"",
-        ""argument_value"": ""$$PREV[2][0]""
-      }
-    ]
-  },
-  {
-    ""tool_name"": ""create_actionable_tasks_from_text"",
-    ""arguments"": [
-      {
-        ""argument_name"": ""text"",
-        ""argument_value"": ""$$PREV[5][0].description""
       }
     ]
   }
@@ -682,7 +616,8 @@ json","[
       }
     ]
   }
-]"
+]
+"
 "Retrieve work items related to the project ""EnterprisePlatform"" and provide a detailed summary, including information on the assignees, creation dates, and issue priorities.","[
   {
     ""tool_name"": ""search_object_by_name"",

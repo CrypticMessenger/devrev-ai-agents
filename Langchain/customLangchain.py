@@ -21,8 +21,8 @@ from langchain.tools.render import render_text_description
 from langchain.llms import GooglePalm
 
 
-
-from .tools import create_tools
+# import tools.py functions from directory
+from .tools import *
 
 
 llm = GooglePalm(temperature=0, google_api_key='AIzaSyAq9RCFh9Jx5t9oR20xWRAZdXsn-b01pT8')
@@ -37,18 +37,19 @@ class CustomOutputParser(AgentOutputParser):
         i = 0
         while i < len(lines):
             line = lines[i]
-            if line.startswith('"tool name"'):
+            if line.startswith('"tool_name"'):
                 tool_name = line.split(":")[1].strip().strip('"')
                 i=i+1
                 tool_info = {}
                 tool_info['tool_name'] = tool_name
                 arguments = []
                 while i<len(lines):
-                    if lines[i].startswith('"tool name"'):
+                    if lines[i].startswith('"tool_name"'):
                         break
                     else:
                         argument_name = lines[i].split(":")[1].strip().strip('"')
-                        argument_value =  lines[i+1].split(":")[1].strip().strip('"')
+                        # split next line by '":' and then strip the spaces and " from the argument value
+                        argument_value = lines[i+1].split('":')[1].strip().strip('"')
                         arguments.append({"argument_name": argument_name, "argument_value":argument_value})
                         i=i+2
                 tool_info['arguments']=arguments
@@ -61,6 +62,8 @@ class CustomOutputParser(AgentOutputParser):
 
 
     def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
+
+        print("llm_output: ",llm_output)
         # Check if agent should finish
         if "Final Answer:" in llm_output:
             return AgentFinish(
@@ -99,7 +102,11 @@ class CustomPromptTemplate(StringPromptTemplate):
         kwargs["tools"] = "\n".join([f"{tool.name}: {tool.description}" for tool in self.tools])
         # Create a list of tool names for the tools provided
         kwargs["tool_names"] = ", ".join([tool.name for tool in self.tools])
-        return self.template.format(**kwargs)
+
+        final_template = self.template.format(**kwargs)
+
+        print("final prompt: ", final_template)
+        return final_template
 
 
 class Inference:
@@ -126,9 +133,10 @@ class Inference:
             allowed_tools=self.tool_names
         )
 
-        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True)
+        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True,max_iterations=5000)
 
     def invoke_agent(self, input_question):
         print("Agent Invoked")
+        print(f"Input Question: {input_question}")
         output = self.agent_executor.invoke({"input": input_question})
         return output['output']

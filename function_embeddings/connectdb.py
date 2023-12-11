@@ -2,7 +2,7 @@ import configparser
 from pymilvus import connections, utility
 from pymilvus import Collection
 import json
-from schema import *
+from .schema import *
 import sys
 
 def connectdb(MODEL:str):
@@ -45,3 +45,5 @@ def connectdb(MODEL:str):
         print(f"Something went wrong: {e}")
         return None
 
+def disconnectdb():
+    connections.disconnect('default')
