@@ -8,8 +8,6 @@ import json
 import google.generativeai as palm
 import spacy
 
-nlp = spacy.load("en_core_web_lg")
-
 my_config = json.load(open("config.json"))
 
 palm.configure(api_key=my_config["palm_api_key"])
@@ -53,33 +51,40 @@ def load_creds():
             token.write(creds.to_json())
     return creds
 
-def generate_argument_descriptions(tools, look_in = 'refined_arguments_description.json'):
+
+def generate_argument_descriptions(tools, look_in="refined_arguments_description.json"):
     arg_prompt = json.load(open("prompts.json"))["argument_processing_prompt"]
-    if os.path.exists('refined_arguments_description.json'):
-        arguments_description = json.load(open(look_in, 'r'))
+    if os.path.exists("refined_arguments_description.json"):
+        arguments_description = json.load(open(look_in, "r"))
     else:
         for tool in tools["tools"]:
             arguments_description[tool["name"]] = []
-            for argument in tool.get("arguments" ,[]):
+            for argument in tool.get("arguments", []):
                 output = palm.generate_text(
                     model=text_model,
                     prompt=arg_prompt % argument,
                     temperature=0,
                     max_output_tokens=800,
                 )
-                arguments_description[tool["name"]].append({argument["name"]: eval(output.result)}) 
-        json.dump(arguments_description, open(look_in, 'w'))
+                arguments_description[tool["name"]].append(
+                    {argument["name"]: eval(output.result)}
+                )
+        json.dump(arguments_description, open(look_in, "w"))
     return arguments_description
+
 
 def get_tools_description(tools, argument_descriptions):
     tools_description = ""
     for tool in tools["tools"]:
-        tools_description += "\n" + f"{tool['name']}:{tool['description'].split('.')[0]}" 
+        tools_description += (
+            "\n" + f"{tool['name']}:{tool['description'].split('.')[0]}"
+        )
         for argument in argument_descriptions[tool["name"]]:
             tools_description += " with args:"
             for arg, props in argument.items():
                 tools_description += f"\n\t{arg}:{props['desc'].split('.')[0]}"
     return tools_description
+
 
 def segement_task(task_statement: str):
     segmentation_prompt = json.load(open("prompts.json"))["segmentation_prompt"]
@@ -93,8 +98,6 @@ def segement_task(task_statement: str):
 
     return eval(response.result)
 
-def get_relevant_tools(task, tools):
-    return []
 
 def get_tools_for_tasks(tasks, tools_description):
     output = []
@@ -111,6 +114,20 @@ def get_tools_for_tasks(tasks, tools_description):
             return []
         output.append((task, response.result))
     return output
+
+
+def get_relevant_tools(tasks, tools):
+    tools_description = get_tools_description(
+        tools,
+        get_tools_description(
+            tools,
+            argument_descriptions=generate_argument_descriptions(
+                tools, look_in="refined_arguments_description.json"
+            ),
+        ),
+    )
+    return get_tools_for_tasks(tasks, tools_description)
+
 
 class KnowledgeItem:
     description: str
@@ -142,6 +159,7 @@ def get_base_knowledge(tools, arguments_description):
 
     return knowledge
 
+
 def elaborate_args(args: list[dict]):
     response = ""
     primary_count = 0
@@ -153,7 +171,7 @@ def elaborate_args(args: list[dict]):
                 primary_count += 1
             else:
                 response += f"{name}:{props['desc']}"
-            if 'allowed' in props.keys():
+            if "allowed" in props.keys():
                 response += f" allowing: {props['allowed']}"
 
     return response
@@ -168,7 +186,7 @@ def get_instruction_prompt(instruction, arguments_description, knowledge):
     prompt = ""
     # prompt = f"give response for:\n"
     prompt += f"Directive:{directive}\nTool: {tool_to_be_used} with args:{elaborate_args(tool_arguments)}"
-    
+
     prompt += "\nPast Actions/Knowledge:"
     for knowledge_item in knowledge[::-1]:
         prompt += f"\n\t{knowledge_item.summarize()}"
@@ -206,7 +224,7 @@ def complete_task(instructions: deque, tools, arguments_description):
             prompt=subtask_solution_prompt
             + get_instruction_prompt(instruction, arguments_description, knowledge),
         )
-        total_len += tokens['token_count']
+        total_len += tokens["token_count"]
 
         if len(response["missing_action"]) > 0:
             print(f"Missing action: {response['missing_action']}")
@@ -216,12 +234,74 @@ def complete_task(instructions: deque, tools, arguments_description):
             print(f"Tool for missing action: {tool_for_missing_action}")
 
             if len(tool_for_missing_action) > 0:
-                instructions.appendleft((response["missing_action"], tool_for_missing_action[0][1]))
+                instructions.appendleft(
+                    (response["missing_action"], tool_for_missing_action[0][1])
+                )
         else:
             print(f"Result: {response['result']}")
             instructions.popleft()
             knowledge.append(KnowledgeItem(instruction[0], instruction[1]))
         print()
-    
+
     print(f"Total tokens: {total_len}")
     return knowledge
+
+
+def topo_sort(knowledge: list[KnowledgeItem]) -> list:
+    """Returns a topologically sorted list of knowledge items."""
+    final_goal = knowledge[-1]
+    for item in knowledge:
+        neighbors = set()
+        for arg in item.arg_mapping:
+            # print(arg)
+            if (
+                isinstance(arg[1], list)
+                or isinstance(arg[1], tuple)
+                or isinstance(arg[1], set)
+                or isinstance(arg[1], dict)
+            ):
+                nbs = [k_item for k_item in knowledge if k_item.tool in arg[1]]
+                neighbors.update(nbs)
+            else:
+                nbs = [k_item for k_item in knowledge if k_item.tool == arg[1]]
+                neighbors.update(nbs)
+        item.neighbors = neighbors
+
+
+    def topo_sort_util(k_item: KnowledgeItem, visited: set, stack: list):
+        visited.add(k_item)
+        for neighbor in k_item.neighbors:
+            if neighbor not in visited:
+                topo_sort_util(neighbor, visited, stack)
+        stack.append(k_item)
+
+    visited = set()
+    stack = []
+
+    topo_sort_util(final_goal, visited, stack)
+
+    # stack = stack[::-1]
+    solution = []
+    for item in stack:
+        tool_ordering = [k_item.tool for k_item in stack]
+        solution_item = {}
+        solution_item["tool_name"] = item.tool
+        solution_item["arguments"] = []
+        for arg in item.arg_mapping:
+            value = arg[1]
+            if (
+                isinstance(arg[1], list)
+                or isinstance(arg[1], tuple)
+                or isinstance(arg[1], set)
+                or isinstance(arg[1], dict)
+            ):
+                for v in arg[1]:
+                    if v in tool_ordering:
+                        value  = f"$$PREV[{tool_ordering.index(v)}]"
+            elif arg[1] in tool_ordering:
+                value = f"$$PREV[{tool_ordering.index(arg[1])}]"
+
+            solution_item["arguments"].append({"argument_name": arg[0], "argument_value": value})
+        solution.append(solution_item)
+    
+    return solution

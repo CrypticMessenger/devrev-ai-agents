@@ -10,7 +10,6 @@ from ExperimentPipeline import ExperimentPipeline
 def objective_similarity(list1,list2):
   return compare_lists_of_tools(list1,list2)
 
-
 # Define Inference Function
 def inference_function(query):
     obj = Inference(template,all_tools)
@@ -34,7 +33,7 @@ original_df = pd.read_csv("Data/test_v0.csv")
 original_df['Output_map'] = original_df['Output'].apply(process_output)
 
 
-df = original_df.sample(n=10, random_state=35)
+df = original_df.sample(n=20, random_state=35)
 df = df.reset_index(drop=True)
 result_map = df.set_index('Query')['Output_map'].to_dict()
 
