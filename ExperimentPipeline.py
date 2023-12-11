@@ -1,18 +1,9 @@
 import pandas as pd
-import itertools
 import time
-import random
-import math
 import os
 import matplotlib.pyplot as plt
 import json
-from sentence_transformers import SentenceTransformer, util
 import math
-
-from Langchain.customLangchain import Inference
-from constants import template,all_tools
-from utils.OutputChecker import compare_lists_of_tools
-
 
 """# Experiment Setup
 
@@ -27,96 +18,68 @@ class ExperimentPipeline:
         self.exp_dir = EXP_DIR
         self.exp_number = self.get_next_experiment_number()
         self.exp_dir = os.path.join(EXP_DIR , f"experiment_{self.exp_number}")
-        self.master_excel_file = os.path.join(EXP_DIR,'Master_Results.xlsx')
         self.output_df = df
-
 
     def run_experiment(self,save_results=True):
         if not os.path.exists(self.exp_dir):
               os.makedirs(self.exp_dir)
-        total_inference_time = 0
-        total_similarity = 0
-        outputs=[]
+        actual_outputs=[]
         similarities = []
+        inference_times = []
+        input_tokens = []
+        output_tokens = []
         for query in self.result_map.keys():
             start_time = time.time()
-            output = self.inference_func(query)
-            outputs.append(output)
-
-            similarity = self.similarity_func(self.result_map[query], output)
+            actual_output,input_token,output_token = self.inference_func(query)
+            actual_outputs.append(actual_output)
+            similarity = self.similarity_func(self.result_map[query], actual_output)
             similarities.append(similarity)
-
             end_time = time.time()
             inference_time = end_time - start_time
+            inference_times.append(inference_time)
+            input_tokens.append(input_token)
+            output_tokens.append(output_token)
 
-            total_inference_time += inference_time
-            total_similarity += similarity
-
-        self.save_outputs(outputs,similarities)
-        self.results.append({'Similarity': total_similarity, 'Inference_Time': total_inference_time})
+        self.save_outputs(actual_outputs,similarities,inference_times,input_tokens,output_tokens)
+        self.results = {'Accuracy': sum(similarities)/self.size, 'Average Inference Time': sum(inference_times)/self.size,'Average Input Tokens': sum(input_tokens)/self.size,'Average Output Tokens': sum(output_tokens)/self.size}
         if save_results:
             self.save_results()
 
     def save_results(self):
-        self.create_dataframe()
-        self.plot_metrics()
-        self.add_to_master_excel()
+        file_name = os.path.join(self.exp_dir, "experiment_results.json")
+        with open(file_name, 'w') as file:
+            json.dump(self.results, file)
 
-    def create_dataframe(self):
-        file_name = os.path.join(self.exp_dir, "experiment_results.csv")
-        self.df = pd.DataFrame(self.results)
-        self.df.to_csv(file_name, index=True)
-
-    def save_outputs(self,outputs,similarities):
-        self.output_df['Output'] = outputs
-        self.output_df['Similarity Score'] = similarities
+    def save_outputs(self,actual_outputs,similarities,inference_times,input_tokens,output_tokens):
+        self.output_df['actual_output'] = actual_outputs
+        self.output_df['similarity_score'] = similarities
+        self.output_df['inference_time'] = inference_times
+        self.output_df['input_token'] = input_tokens
+        self.output_df['output_token'] = output_tokens
         file_name = os.path.join(self.exp_dir, "experiment_outputs.csv")
-        self.output_df.to_csv(file_name, index=True)
-        self.output_df.drop(columns='Output',inplace=True)
+        self.output_df.to_csv(file_name, index=True) 
+        self.plot_list(inference_times,'Inference Time')
+        self.plot_list(input_tokens,'Input tokens')
+        self.plot_list(output_tokens,'Output tokens')  
 
-    def plot_metrics(self):
-        plt.figure(figsize=(10, 6))
-
-        # Bar plot for Similarity
-        plt.subplot(1, 2, 1)
-        plt.bar(self.df.index, self.df['Similarity'], color='skyblue')
-        plt.xlabel('Index')
-        plt.ylabel('Similarity')
-        plt.title('Similarity vs. Index')
-
-        # Bar plot for Inference_Time
-        plt.subplot(1, 2, 2)
-        plt.bar(self.df.index, self.df['Inference_Time'], color='salmon')
-        plt.xlabel('Index')
-        plt.ylabel('Inference Time')
-        plt.title('Inference Time vs. Index')
-
-        plt.tight_layout()
-
-        # Save plots
-        if not os.path.exists(self.exp_dir):
-            os.makedirs(self.exp_dir)
-
-        plot_similarity_name = os.path.join(self.exp_dir, f"exp_{self.exp_number}_metrics_plot.png")
-        plt.savefig(plot_similarity_name)
-        # plt.show()
+    def plot_list(self,data,plot_name):
+        # Generating x-axis values (assuming it's just the index of the data points)
+        plt.figure() 
+        x_values = range(1, len(data) + 1)
+        # Plotting the line graph
+        plt.plot(x_values, data, marker='o', linestyle='-')  # 'o' for markers, '-' for line style
+        plt.xlabel('Queries')  # Replace with your X-axis label
+        plt.ylabel(f'{plot_name}')  # Replace with your Y-axis label
+        plt.title(f'{plot_name} over queries')     # Replace with your plot title
+        plt.grid(True)    
+        plot_path = os.path.join(self.exp_dir, f"exp_{self.exp_number}_{plot_name}_plot.png")      # Add gridlines if needed
+        plt.savefig(plot_path)
 
     def get_next_experiment_number(self):
         exp_num = 1
         while os.path.exists(os.path.join(self.exp_dir ,f"experiment_{exp_num}")):
             exp_num += 1
         return exp_num
-
-    def add_to_master_excel(self):
-      print(self.master_excel_file)
-      if not os.path.exists(self.master_excel_file):
-          with pd.ExcelWriter(self.master_excel_file, engine='openpyxl') as writer:
-              empty_df = pd.DataFrame(columns=['Placeholder'])
-              empty_df.to_excel(writer, sheet_name='Placeholder', index=False)
-
-      with pd.ExcelWriter(self.master_excel_file, mode='a', engine='openpyxl') as writer:
-          sheet_name = f"Experiment_{self.exp_number}"
-          self.df.to_excel(writer, sheet_name=sheet_name, index=False)
 
 
 
