@@ -1,9 +1,9 @@
 from constants import EXAMPLE_TEMPLATE, all_tools
 from openai import OpenAI
-from tools import create_description,create_description_with_example
-from add_embedding import add_embedding
-from get_embedding import search_similar
-from update_embedding import update_embedding
+# from tools import create_description,create_description_with_example
+# from add_embedding import add_embedding
+# from get_embedding import search_similar
+# from update_embedding import update_embedding
 
 class OpenAIWrapper:
   def __init__(self,client,text_model="gpt-3.5-turbo-1106",embedding_model="text-embedding-ada-002",example_template = ""):
