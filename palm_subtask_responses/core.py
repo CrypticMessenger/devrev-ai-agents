@@ -267,19 +267,20 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
                 neighbors.update(nbs)
         item.neighbors = neighbors
 
+
     def topo_sort_util(k_item: KnowledgeItem, visited: set, stack: list):
         visited.add(k_item)
         for neighbor in k_item.neighbors:
             if neighbor not in visited:
                 topo_sort_util(neighbor, visited, stack)
-        stack.insert(0, k_item)
+        stack.append(k_item)
 
     visited = set()
     stack = []
 
     topo_sort_util(final_goal, visited, stack)
 
-    stack = stack[::-1]
+    # stack = stack[::-1]
     solution = []
     for item in stack:
         tool_ordering = [k_item.tool for k_item in stack]
@@ -296,11 +297,11 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
             ):
                 for v in arg[1]:
                     if v in tool_ordering:
-                        value = f"$$PREV[{tool_ordering.index(v)}]"
+                        value  = f"$$PREV[{tool_ordering.index(v)}]"
             elif arg[1] in tool_ordering:
                 value = f"$$PREV[{tool_ordering.index(arg[1])}]"
 
-            solution_item["arguments"].append({"argument_name": arg[0], "value": value})
+            solution_item["arguments"].append({"argument_name": arg[0], "argument_value": value})
         solution.append(solution_item)
-
+    
     return solution
