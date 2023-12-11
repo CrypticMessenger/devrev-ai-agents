@@ -4,6 +4,8 @@ from utils.OutputChecker import compare_lists_of_tools
 import pandas as pd
 import json
 from ExperimentPipeline import ExperimentPipeline
+from constants import all_tools
+from core import *
 
 def objective_similarity(list1,list2):
   return compare_lists_of_tools(list1,list2)
@@ -11,7 +13,17 @@ def objective_similarity(list1,list2):
 
 # Define Inference Function
 def inference_function(query):
-    return "response"
+    task_segments = segement_task(query)
+
+    task_and_tool = get_relevant_tools(task_segments, all_tools)
+
+    argument_descriptions = generate_argument_descriptions(all_tools, look_in = "refined_arguments_description.json")
+
+    solution_knowledge = complete_task(task_and_tool, argument_descriptions)
+
+    final_solution = topo_sort(solution_knowledge)
+
+    return json.dumps(final_solution)
 
 def process_output(input_string) :
   try :

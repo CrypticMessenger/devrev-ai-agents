@@ -8,8 +8,6 @@ import json
 import google.generativeai as palm
 import spacy
 
-nlp = spacy.load("en_core_web_lg")
-
 my_config = json.load(open("config.json"))
 
 palm.configure(api_key=my_config["palm_api_key"])
@@ -101,10 +99,6 @@ def segement_task(task_statement: str):
     return eval(response.result)
 
 
-def get_relevant_tools(task, tools):
-    return []
-
-
 def get_tools_for_tasks(tasks, tools_description):
     output = []
     tool_getter_prompt = json.load(open("prompts.json"))["tool_getter_prompt"]
@@ -120,6 +114,19 @@ def get_tools_for_tasks(tasks, tools_description):
             return []
         output.append((task, response.result))
     return output
+
+
+def get_relevant_tools(tasks, tools):
+    tools_description = get_tools_description(
+        tools,
+        get_tools_description(
+            tools,
+            argument_descriptions=generate_argument_descriptions(
+                tools, look_in="refined_arguments_description.json"
+            ),
+        ),
+    )
+    return get_tools_for_tasks(tasks, tools_description)
 
 
 class KnowledgeItem:
