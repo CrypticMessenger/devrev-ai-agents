@@ -27,7 +27,7 @@ def search_similar(embedding_data:json,model:str, metric_type="COSINE", topk=5, 
     load_db(collection)
 
     # define search vector
-    search_vec = [embedding_data['embedding']]
+    search_vec = [embedding_data]
 
     if model=='openai':
         # search_vec = [[random.random() for _ in range(dim_openai)]]

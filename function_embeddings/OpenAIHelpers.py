@@ -91,24 +91,24 @@ class OpenAIWrapper:
 
   def get_related_tools(self,query):
     #implement logic of getting tools
-    with open("function_embeddings/function_embeddings_openai_updated.json", "r") as json_file:
-      data = json.load(json_file)
-    embedding = self.get_embedding(query)
-    tools_sim = []
-    for tool in data:
-      sim = compute_tool_similarity(tool['embedding'],embedding)
-      tools_sim.append({"tool_name": tool["function_name"],"tool_description": tool["description"],"arguments": tool["arguments"],"similarity":sim})
-    desc_tools = sorted(tools_sim, key=lambda x: x['similarity'], reverse=True)
-    return desc_tools
+    # with open("function_embeddings/function_embeddings_openai_updated.json", "r") as json_file:
+    #   data = json.load(json_file)
+    # embedding = self.get_embedding(query)
+    # tools_sim = []
+    # for tool in data:
+    #   sim = compute_tool_similarity(tool['embedding'],embedding)
+    #   tools_sim.append({"tool_name": tool["function_name"],"tool_description": tool["description"],"arguments": tool["arguments"],"similarity":sim})
+    # desc_tools = sorted(tools_sim, key=lambda x: x['similarity'], reverse=True)
+    # return desc_tools
     #implement logic of getting tools
     embedding = self.get_embedding(query)
 
-    data = {
-      'model':'openai',
-      'embedding':embedding
-    }
+    # data = {
+    #   'model':'openai',
+    #   'embedding':embedding
+    # }
 
-    result = search_similar(data)
+    result = search_similar(embedding, model='openai')
     return result
 
 
@@ -123,8 +123,6 @@ class OpenAIWrapper:
     )
 
     return response.choices[0].message.content
-
-  
 
 if __name__=="__main__":
   client = OpenAI(api_key = "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")
