@@ -1,12 +1,12 @@
 from constants import EXAMPLE_TEMPLATE, all_tools
-from openai import OpenAI
 from tools import create_description,create_description_with_example
 from add_embedding import add_embedding
 from get_embedding import search_similar
 from update_embedding import update_embedding
+import google.generativeai as palm
 
-class OpenAIWrapper:
-  def __init__(self,client,text_model="gpt-3.5-turbo-1106",embedding_model="text-embedding-ada-002",example_template = ""):
+class PalmWrapper:
+  def __init__(self,client,text_model="text-bison@001",embedding_model="textembedding-gecko@001",example_template = ""):
     self.client = client
     self.text_model = text_model
     self.embedding_model = embedding_model
@@ -32,7 +32,7 @@ class OpenAIWrapper:
     embedding = self.get_embedding(function_description)
     data = {
       'name':function_name,
-      'model':'openai',
+      'model':'palm',
       'description':function_description,
       'embedding':embedding
     }
@@ -45,10 +45,10 @@ class OpenAIWrapper:
     ## implement logic of updation
     embedding = self.get_embedding(function_description)
     data = {
-      'name':function_name,
-      'model':'openai',
-      'description':function_description,
-      'embedding':embedding
+        'name':function_name,
+        'model':'palm',
+        'description':function_description,
+        'embedding':embedding
     }
 
     response = update_embedding(data)
@@ -60,7 +60,7 @@ class OpenAIWrapper:
     embedding = self.get_embedding(query)
 
     data = {
-      'model':'openai',
+      'model':'palm',
       'embedding':embedding
     }
 
@@ -69,8 +69,8 @@ class OpenAIWrapper:
 
 
 if __name__=="__main__":
-    client = OpenAI(api_key = "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")
-    model = OpenAIWrapper(client,example_template=EXAMPLE_TEMPLATE)
+    palm.configure(api_key="api-key")
+    model = PalmWrapper(palm,example_template=EXAMPLE_TEMPLATE)
     tool = all_tools['tools'][0]
     function_description = create_description(tool)
     examples = model.generate_examples(function_description=function_description,number_of_examples=3)
