@@ -1,0 +1,686 @@
+"Directive:Summarize the high severity tickets coming in from slack from customer Cust123
+Tool: summarize_objects with args:
+- objects (Array[Object]): List of objects to summarize
+Past Actions:
+- Returns the ID of the current user: who_am_i
+- Returns the ID of the current sprint: get_sprint_id","{""result"": [], ""missing_action"": ""Get high severity tickets coming in from slack from customer Cust123""}"
+"Directive:Summarize the high severity tickets coming in from slack from customer Cust123
+Tool: summarize_objects with args:
+- objects (Array[Object]): List of objects to summarize
+Past Actions:
+- Get the high severity tickets coming in from slack from customer Cust123: get_high_severity_tickets: works_list
+- Returns the ID of the current user: who_am_i
+- Returns the ID of the current sprint: get_sprint_id","{""result"": [(""objects"", ""works_list"")], ""missing_action"": """"}"
+"Directive: Summarize the work items similar to TKT-123
+Tool:summarize_objects with args:
+- objects (Array[Object]):The objects to summarize
+Past Actions/Knowledge:
+- Prioritize the work items similar to TKT-123: prioritize_work_items
+- Get all similar work items to TKT-123: get_similar_work_items
+- the ID of the current User: who_am_i
+- the current sprint:get_current_sprint","{""result"":[(""objects"",[""get_similar_work_items""])],""missing_action"":""""}"
+"Directive: Get my P0 issues on part DEV-PART-123
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [(""owned_by"",[""who_am_i""]),(""issue.priority"",[""p0""]),(""applies_to_part"",[""DEV-PART-123""])],""missing_action"": """"}"
+"Directive: Summarize my P0 issues
+Tool:summarize_objects with args:
+- objects (Array[Object]):The objects to summarize
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [],""missing_action"": ""Get my P0 issues""}"
+"Directive: Prioritize my P0 issues
+Tool:prioritize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [],""missing_action"": ""Get my P0 issues""}"
+"Directive: Send an email to User-123 regarding issue I-123.
+Tool: send_email with args:
+- to (String): The email address of the recipient
+- from (String): The email address of the sender
+- subject (String): The subject of the email (optional)
+- body (String): The body of the email
+Past Actions/Knowledge:
+- Reutrn user details of User-123: get_user_details","{""result"": [], ""missing_action"": ""Summarize issue I-123""}"
+"Directive: Get all issues
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:","{""result"": [],""missing_action"": """"}"
+"Directive: Send an email to User-123 regarding issue I-123.
+Tool: send_email with args:
+- to (String): The email address of the recipient
+- subject (String): The subject of the email (optional)
+- body (String): The body of the email
+Past Actions/Knowledge:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get user details of User-123""}"
+"Directive:Get my P0 issues on all objects containing the word ""AI""
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i","{""result"": [],""missing_action"": ""Get all parts containing the word ""AI""""}"
+"Directive: Get my P0 issues on all objects containing the word ""AI""
+Tool:get_items with args:
+- applies_to_part (String): Filters for work belonging to any of the provided parts.
+- owned_by (String): Filters for work owned by any of these users
+- created_by (String): Filters for work created by any of these users 
+- issue.priority (String): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i","{""result"": [(""owned_by"",""who_am_i""),(""issue.priority"",""p0""),(""applies_to_part"",""get_objects_by_keyword"")],""missing_action"": """"}"
+"Directive: Send an email to User-123 regarding issue I-123.
+Tool: send_email with args:
+- to (String): The email address of the recipient
+- from (String): The email address of the sender
+- subject (String): The subject of the email (optional)
+- body (String): The body of the email
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details
+- Summarize issue I-123: summarize_objects
+- Returns the ID of the current User: who_am_i","{""result"": [(""to"", ""get_user_details""), (""from"", ""who_am_i""), (""subject"", ""Regarding issue I-123""), (""body"", ""summarize_objects"")],""missing_action"": """"}"
+"Directive: Dial up the user User-123
+Tool: call_user with args:
+- contact_details (Object): The contact details of the user
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get user details of User-123""}"
+"Directive: Dial up the user User-123
+Tool: call_user with args:
+- contact_details (Object): The contact details of the user
+Past Actions/Knowledge:
+- Get user details of User-123: get_user_details
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""contact_details"", ""get_user_details"")], ""missing_action"": """"}"
+"Directive: Pay user User-123 his balance amount
+Tool: pay_user with args:
+- contact_details (Object): The contact details of the user
+- amount (Number): The amount to pay the user
+Past Actions/Knowledge:
+- Get balance amount of User-123: get_user_balance
+- Get user details of User-123: get_user_details
+- the current sprint: get_current_sprint","{""result"": [(""contact_details"", ""get_user_details""), (""amount"", ""get_user_balance"")], ""missing_action"": """"}"
+"Directive: Pay user User-123 his balance amount
+Tool: pay_user with args:
+- contact_details (Object): The contact details of the user
+- amount (Number): The amount to pay the user
+Past Actions/Knowledge:
+- Returns user details of User-123: get_user_details
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get balance amount of User-123""}"
+"Directive: Pay user User-123 his $100
+Tool: pay_user with args:
+- contact_details (Object): The contact details of the user
+- amount (Number): The amount to pay the user
+Past Actions/Knowledge:
+- Returns user details of User-123: get_user_details
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""contact_details"", ""get_user_details""), (""amount"", 100)], ""missing_action"": """"}"
+"Directive: Close all unresolved issues
+Tool: close_issues with args:
+- issues (Array[Object]): List of issues to close
+Past Actions/Knowledge:","{""result"": [], ""missing_action"": ""Get the list of unresolved issues""}"
+"Directive: Move all tasks to the next sprint
+Tool: move_issues with args:
+- issues (Array[Object]): List of issues to move
+- destination_sprint (String): The sprint to move the issues to
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the next sprint: get_next_sprint","{""result"": [], ""missing_action"": ""Get the list of all tasks""}"
+"Directive: Move all unresolved issues to the next sprint
+Tool: move_issues with args:
+- issues (Array[Object]): List of issues to move
+- destination_sprint (String): The sprint to move the issues to
+Past Actions/Knowledge:
+- Returns List of unresolved issues: get_unresolved_issues
+- Get the ID of the current User: who_am_i
+- Return the next sprint: get_next_sprint","{""result"": [(""issues"", [""get_unresolved_issues""]), (""destination_sprint"", ""get_next_sprint"")], ""missing_action"": """"}"
+"Directive: Get my issues on all objects made by MAN-123
+Tool:get_items with args:
+- applies_to_part (String): Filters for work belonging to any of the provided parts.
+- owned_by (String): Filters for work owned by any of these users
+- created_by (String): Filters for work created by any of these users 
+- issue.priority (String): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Returns all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""owned_by"",""who_am_i""),(""created_by"",""MAN-123"")],""missing_action"": """"}"
+"Directive: Get my issues on all objects made by my Manager
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get user details of my Manager""}"
+"Directive: Get issues made by users in my team
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:","{""result"": [],""missing_action"": ""Get user details of my team""}"
+"Directive: Get issues made by users U-123 and U-456
+Tool:get_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i","{""result"": [(""created_by"", [""U-123"", ""U-456""])],""missing_action"": """"}"
+"Directive: Get issues owned by users U-123 and U-456 and with priorities P0 and P1
+Tool:get_work_items with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- owned_by (Array[String]): Filters for work owned by any of these users
+- created_by (Array[String]): Filters for work created by any of these users 
+- issue.priority (Array[String]): Filters for issues with any of the provided priorities allowing: [""p0"", ""p1"", ""p2"", ""p3""] (optional)
+Past Actions/Knowledge:
+- Get all parts containing the word ""AI"": get_objects_by_keyword
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""created_by"", [""U-123"", ""U-456""]), (""issue.priority"":[""p0"", ""p1""])],""missing_action"": """"}"
+"Directive: Summarize my open tasks
+Tool: summarize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:","{""result"": [], ""missing_action"": ""Get my open tasks""}"
+"Directive: Assign a QA tester to Project P-789
+Tool: assign_user with args:
+- task_key (String): The key of the task to assign
+- user_key (Array[String]): The key of the QA tester to assign to the issue
+Past Actions/Knowledge:
+- List of available QA testers: get_available_qa_testers
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""task_key"", ""P-789""), (""user_key"", [""get_available_qa_testers""])], ""missing_action"": """"}"
+"Directive: Create a new high-priority issue from action item creted from T in the current backlog
+Tool:create_issue with args:
+- summary (String): A brief, one-sentence description of the issue
+- description (String): A detailed description of the issue
+- priority (String): Priority of the issue allowing: [""High"", ""Medium"", ""Low"", ""Blocker""]
+- backlog (String): The backlog to add the issue to (optional)
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get action items created from T: get_action_items_from_text
+- Get Current backlog: get_backlog_issues
+- Get the ID of the current User: who_am_i","{""result"": [(""summary"", """"), (""description"", """"), (""priority"", ""High""), (""backlog"", ""get_backlog_issues"")], ""missing_action"": """"}"
+"Directive: Create an action items created from transcript T
+Tool: create_actionable_tasks_from_text with args:
+- text (String):The text from which the actionable insights need to be created
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get action items created from T: get_action_items_from_text
+- Get Current backlog: get_backlog_issues
+- Get the ID of the current User: who_am_i","{""result"": [(""text"", ""T"")], ""missing_action"": """"}"
+"Directive: Assign developers to all tasks in the backlog
+Tool: assign_users with args:
+- tasks (Array[Object]): List of tasks to assign
+- users (Array[String]): List of developers to assign to the tasks
+Past Actions/Knowledge:
+- List of developers: get_available_developers
+- List of tasks in the backlog: get_backlog_tasks
+- the ID of the current User: who_am_i","{""result"": [(""tasks"", ""get_backlog_tasks""), (""users"", [""get_available_developers""])], ""missing_action"": """"}"
+"Directive: Summarize the tasks completed by my team
+Tool: summarize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get completed tasks by my team""}"
+"Directive: Create a new issue with the summary ""Fix bug in AI"" and the description ""This is a bug in AI""
+Tool:create_issue with args:
+- summary (String): A brief, one-sentence description of the issue
+- description (String): A detailed description of the issue
+- priority (String): Priority of the issue allowing: [""High"", ""Medium"", ""Low"", ""Blocker""]
+- backlog (String): The backlog to add the issue to (optional)
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""summary"", ""Fix bug in AI""), (""description"", ""This is a bug in AI"")], ""missing_action"": """"}"
+"Directive: Close all unresolved support tickets
+Tool: close_issues with args:
+- issues (Array[Object]): List of issues to close
+Past Actions/Knowledge:
+- Get the list of all users: get_all_users","{""result"": [], ""missing_action"": ""Get the list of unresolved support tickets""}"
+"Directive: Close all unresolved bugs in the system
+Tool: close_issues with args:
+- issues (Array[Object]): List of issues to close
+- issue.type (String): Filters for issues by the type [""Bug"", ""Feature"", ""Optimisation""] (optional)
+- issue.status (String): Filters for issues by the status allowing [""Unresolved"", ""Resolved"", ""Abandoned""] (optional)
+Past Actions/Knowledge:
+- Get the list of all bugs: get_all_bugs","{""result"": [(""issues"", [""get_all_bugs""]), (""issue.type"", [""Bug""]), (""issue.status"", [""Unresolved""])], ""missing_action"": """"}"
+"Directive: Assign a UI/UX designer to tasks in sprint S-456
+Tool: assign_user with args:
+- task_keys (Array[String]): The keys of the tasks to assign
+- user_key (Array[String]): The key of the UI/UX designer to assign to the issue
+Past Actions/Knowledge:
+- List of available UI/UX designers: get_available_workers
+- Get tasks in sprint S-456: get_tasks_in_sprint
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""task_keys"", ""get_tasks_in_sprint""), (""user_key"", [""get_available_workers""])], ""missing_action"": """"}"
+"Directive: Assign a UI/UX designer to tasks in sprint S-456
+Tool: assign_user with args:
+- task_keys (Array[String]): The keys of the tasks to assign
+- user_key (Array[String]): The key of the UI/UX designer to assign to the issue
+Past Actions/Knowledge:
+- List of available UI/UX designers: get_available_workers
+- the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [], ""missing_action"": ""Get tasks in sprint S-456""}"
+"Directive: Create a new Blocking issue with the summary ""Implement feature X"" and the description ""Details about implementing feature X""
+Tool:create_issue with args:
+- summary (String): A brief, one-sentence description of the issue
+- description (String): A detailed description of the issue
+- priority (String): Priority of the issue allowing: [""High"", ""Medium"", ""Low"", ""Blocker""]
+- backlog (String): The backlog to add the issue to (optional)
+Past Actions/Knowledge:
+- List of available priorities: get_available_priorities
+- Get the ID of the current User: who_am_i
+- the current sprint: get_current_sprint","{""result"": [(""summary"", ""Implement feature X""), (""description"", ""Details about implementing feature X""), (""priority"", ""Blocker"")], ""missing_action"": """"}"
+"Directive: Commit my changes to the current repository on a branch named ""feature-123""
+Tool:commit_changes with args:
+- repository (String): The repository to commit to
+- description (String): A detailed description of the commit
+- branch (String): The branch to commit to (optional) 
+Past Actions/Knowledge:
+- Get the changes summary: get_changes_summary
+- Get the name of the current branch: get_current_branch
+- Get the name current repository: get_current_repository","{""result"": [(""repository"", ""get_current_repository""), (""branch"", ""feature-123""), (""description"", ""get_changes_summary"")], ""missing_action"": """"}"
+"Directive: Commit my changes to the current repository on a branch named ""feature-123""
+Tool:commit_changes with args:
+- repository (String): The repository to commit to
+- description (String): A detailed description of the commit
+- branch (String): The branch to commit to (optional) 
+Past Actions/Knowledge:
+- Get the name of the current branch: get_current_branch
+- Get the name current repository: get_current_repository","{""result"": [], ""missing_action"": ""Get the commit change description summary""}"
+"Directive: Move all files with names starting with ""feature-file"" to the folder ""folder-123"" 
+Tool:move_files with args:
+- files (Array[String]): The files to move
+- destination (String): The destination folder
+Past Actions/Knowledge:
+- Get files with names starting with ""feature-file"": get_files_by_name
+- Get the name of the current branch: get_current_branch
+- Get the name current repository: get_current_repository","{""result"": [(""files"", [""get_files_by_name""]), (""destination"", ""folder-123"")], ""missing_action"": """"}"
+"Directive: Move all files with names starting with ""feature-file"" to the folder ""folder-123"" 
+Tool:move_files with args:
+- files (Array[String]): The files to move
+- destination (String): The destination folder
+- delete (Boolean): Whether to delete the files after moving them (optional)
+- overwrite (Boolean): Whether to overwrite the files if they already exist at destination (optional)
+Past Actions/Knowledge:
+- Get the id of the current user: who_am_i
+- Get the current sprint: get_current_sprint
+- Get the name of the current branch: get_current_branch
+- Get the name current repository: get_current_repository","{""result"": [], ""missing_action"": ""Get all files with names starting with ""feature-file""""}"
+"Directive: Get all files with names starting with ""feature-file""
+Tool:get_files_by_name with args:
+- name (String): The name of the files to get
+Past Actions/Knowledge:
+- Get the id of the current user: who_am_i
+- Get the current sprint: get_current_sprint
+- Get the name of the current branch: get_current_branch
+- Get the name current repository: get_current_repository","{""result"": [(""name"", ""feature-file"")], ""missing_action"": """"}"
+"Directive: Get the current sprint
+Tool:get_current_sprint with args:
+Past Actions/Knowledge:
+- Get the id of the current user: who_am_i
+- Get the id of the current sprint: get_current_sprint
+- Returns the name of the current branch: get_current_branch
+- Returns the name current repository: get_current_repository","{""result"": [], ""missing_action"": """"}"
+"Directive: Summarize all the completed tasks from the last sprint
+Tool: summarize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:
+- Get the id of the current user: who_am_i
+- Get the id of the current sprint: get_current_sprint
+- Get the name of the current branch: get_current_branch","{""result"": [], ""missing_action"": ""Get all the completed tasks from the last sprint""}"
+"Directive: Summarize all the completed tasks from the last sprint
+Tool: summarize_objects with args:
+- objects (Array[Object]): The objects to summarize
+Past Actions/Knowledge:
+- Get the id of the current user: who_am_i
+- Get the id of the current sprint: get_current_sprint
+- Returns all completed tasks from the last sprint: get_completed_tasks
+- Get last sprint: get_last_sprint
+- Get the name of the current branch: get_current_branch","{""result"": [(""objects"", [""get_completed_tasks""])], ""missing_action"": """"}"
+"Directive:Summarize my P0 issues
+Tool: summarize_objects with args:
+- objects (Array[Object]): List of objects to summarize
+Past Actions:
+- Returns the ID of the current user: who_am_i
+- Returns the ID of the current sprint: get_sprint_id","{""result"": [], ""missing_action"": ""Get my P0 issues""}"
+"Directive:Get all high severity tickets coming in from slack from customer Cust123
+Tool: works_list with args:
+- applies_to_part (Array[String]): Filters for work belonging to any of the provided parts.
+- created_by (Array[String]): Filters for work created by any of these users
+- owned_by (Array[String]): Filters for work owned by any of these users
+- issue.rev_orgs: Filters for issues with any of the provided Rev organizations (optional)
+- issue.priority: Filters for issues with any of the provided priorities (optional) allowing: ['p0', 'p1', 'p2', 'p3']
+- limit: The maximum number of works to return. (optional)
+- stage.name: Filters for records in the provided stage(s) by name (optional)
+- ticket.needs_response: Filters for tickets that need a response (optional)
+- ticket.severity: Filters for tickets with any of the provided severities (optional) allowing: ['blocker', 'high', 'low', 'medium']
+- ticket.source_channel: Filters for tickets with any of the provided source channels (optional)
+- types: Filters for work of the provided types. (optional) allowing: ['issue', 'ticket', 'task']
+Past Actions:
+- Returns the ID of the current user: who_am_i
+- Returns the ID of the current sprint: get_sprint_id","{'result': [('applies_to_part', [], 'missing_action': 'Get all objects related to customer Cust123'}"
+"Directive: Assign tasks in the backlog to team members
+Tool: assign_tasks with args:
+- tasks (Array[Object]): List of tasks to assign
+- team_members (Array[String]): List of team members to assign tasks to
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the backlog tasks: get_backlog_tasks","{""result"": [], ""missing_action"": ""Get the list of team members""}"
+"Directive: Create a report for all completed tasks in the last sprint
+Tool: create_report with args:
+- tasks (Array[Object]): List of tasks to include in the report
+- sprint (String): The sprint for which the report is generated
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the completed tasks in the last sprint: get_completed_tasks_in_last_sprint","{""result"": [(""tasks"", ""get_completed_tasks_in_last_sprint""), (""sprint"", ""get_current_sprint"")], ""missing_action"": """"}"
+"Directive: Add a new task to the project
+Tool: add_task with args:
+- task_description (String): Description of the new task
+- project (String): Project to which the task should be added
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the list of projects: get_projects","{""result"": [(""project"", ""get_projects"")], ""missing_action"": """"}"
+"Directive: Identify all overdue tasks
+Tool: identify_overdue_tasks with args:
+- tasks (Array[Object]): List of tasks to check for overdue status
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get all tasks assigned to me: get_my_assigned_tasks","{""result"": [(""tasks"", ""get_my_assigned_tasks"")], ""missing_action"": """"}"
+"Directive: Create a summary of all tasks completed by the team this month
+Tool: summarize_tasks with args:
+- tasks (Array[Object]): List of tasks to include in the summary
+- time_period (String): The time period for the summary, e.g., ""this_month""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the completed tasks for the team this month: get_completed_tasks_this_month","{""result"": [(""tasks"", ""get_completed_tasks_this_month""), (""time_period"", ""'this_month'"")], ""missing_action"": """"}"
+"Directive: Update the priority of high-priority tasks
+Tool: update_priority with args:
+- tasks (Array[Object]): List of tasks to update
+- new_priority (String): The new priority for the tasks, e.g., ""high""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get all high-priority tasks: get_high_priority_tasks","{""result"": [(""tasks"", ""get_high_priority_tasks""), (""new_priority"", ""'high'"")], ""missing_action"": """"}"
+"Directive: Find all tasks related to the 'Feature-123' feature
+Tool: find_related_tasks with args:
+- feature_name (String): Name of the feature to find related tasks
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Search for tasks related to 'Feature-123': search_related_tasks","{""result"": [(""feature_name"", ""'Feature-123'""), (""tasks"", ""search_related_tasks"")], ""missing_action"": """"}"
+"Directive: Reassign unresolved issues to different team members
+Tool: reassign_issues with args:
+- issues (Array[Object]): List of issues to reassign
+- new_assignees (Array[String]): List of team members to assign the issues to
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get all unresolved issues: get_unresolved_issues","{""result"": [(""issues"", ""get_unresolved_issues""), (""new_assignees"", ""['team_member1', 'team_member2']"")], ""missing_action"": """"}"
+"Directive: Generate a performance report for tasks completed in the last two sprints
+Tool: generate_performance_report with args:
+- tasks (Array[Object]): List of tasks to include in the report
+- sprints (Array[String]): List of sprints to consider for the report
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get completed tasks in the last two sprints: get_completed_tasks_last_two_sprints","{""result"": [(""tasks"", ""get_completed_tasks_last_two_sprints""), (""sprints"", ""get_last_two_sprints"")], ""missing_action"": """"}"
+"Directive: Identify tasks with overdue deadlines in the 'Marketing' project
+Tool: identify_overdue_tasks with args:
+- tasks (Array[Object]): List of tasks to check for overdue status
+- project_name (String): Name of the project to filter tasks
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get tasks in the 'Marketing' project: get_tasks_in_project","{""result"": [(""tasks"", ""get_tasks_in_project""), (""project_name"", ""'Marketing'"")], ""missing_action"": """"}"
+"Directive: Create a list of tasks pending review by the project manager
+Tool: create_pending_review_list with args:
+- tasks (Array[Object]): List of tasks to include in the pending review list
+- reviewer (String): Name of the project manager for review
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get tasks pending review by the project manager: get_tasks_pending_review","{""result"": [(""tasks"", ""get_tasks_pending_review""), (""reviewer"", ""'project_manager'"")], ""missing_action"": """"}"
+"Directive: Move all 'Bug' issues to the 'Bug-Fix' sprint
+Tool: move_issues with args:
+- issues (Array[Object]): List of issues to move
+- destination_sprint (String): The sprint to move the issues to
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get all 'Bug' issues: get_bug_issues","{""result"": [(""issues"", ""get_bug_issues""), (""destination_sprint"", ""'Bug-Fix'"")], ""missing_action"": """"}"
+"Directive: Identify and prioritize tasks related to customer feedback
+Tool: prioritize_customer_feedback_tasks with args:
+- tasks (Array[Object]): List of tasks related to customer feedback
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks related to customer feedback: get_customer_feedback_tasks","{""result"": [(""tasks"", ""get_customer_feedback_tasks"")], ""missing_action"": """"}"
+"Directive: Create a summary report for all tasks completed by the QA team
+Tool: create_qa_summary_report with args:
+- tasks (Array[Object]): List of tasks completed by the QA team
+- time_period (String): The time period for the summary, e.g., ""last_quarter""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve completed tasks by the QA team: get_qa_completed_tasks","{""result"": [(""tasks"", ""get_qa_completed_tasks""), (""time_period"", ""'last_quarter'"")], ""missing_action"": """"}"
+"Directive: Reassign high-priority tasks to available team members
+Tool: reassign_high_priority_tasks with args:
+- tasks (Array[Object]): List of high-priority tasks to reassign
+- available_team_members (Array[String]): List of team members available for reassignment
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve high-priority tasks: get_high_priority_tasks
+- Identify available team members: get_available_team_members","{""result"": [(""tasks"", ""get_high_priority_tasks""), (""available_team_members"", ""get_available_team_members"")], ""missing_action"": """"}"
+"Directive: Generate a trend analysis report for the project's completion time
+Tool: generate_completion_time_trend_report with args:
+- tasks (Array[Object]): List of tasks for trend analysis
+- project_name (String): Name of the project for analysis
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks for trend analysis: get_tasks_for_trend_analysis","{""result"": [(""tasks"", ""get_tasks_for_trend_analysis""), (""project_name"", ""'Project-X'"")], ""missing_action"": """"}"
+"Directive: Find all tasks related to the 'New Feature' in the upcoming sprint
+Tool: find_related_tasks with args:
+- feature_name (String): Name of the feature to find related tasks
+- sprint (String): The upcoming sprint for task search
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks related to 'New Feature': search_related_tasks
+- Get the upcoming sprint: get_upcoming_sprint","{""result"": [(""feature_name"", ""'New Feature'""), (""tasks"", ""search_related_tasks""), (""sprint"", ""get_upcoming_sprint"")], ""missing_action"": """"}"
+"Directive: Close all tasks with the 'urgent' priority
+Tool: close_tasks with args:
+- tasks (Array[Object]): List of tasks to close
+- priority (String): The priority of tasks to close, e.g., ""urgent""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks with 'urgent' priority: get_urgent_priority_tasks","{""result"": [(""tasks"", ""get_urgent_priority_tasks""), (""priority"", ""'urgent'"")], ""missing_action"": """"}"
+"Directive: Assign unresolved issues to team members for resolution
+Tool: assign_unresolved_issues with args:
+- issues (Array[Object]): List of unresolved issues to assign
+- assignees (Array[String]): List of team members to assign issues
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get unresolved issues: get_unresolved_issues
+- Identify team members for assignment: get_team_members_for_assignment","{""result"": [(""issues"", ""get_unresolved_issues""), (""assignees"", ""get_team_members_for_assignment"")], ""missing_action"": """"}"
+"Directive: Create a report summarizing tasks completed by a specific team member
+Tool: create_individual_report with args:
+- tasks (Array[Object]): List of tasks to include in the report
+- team_member (String): Name of the team member for individual report
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks completed by the team member: get_tasks_completed_by_team_member","{""result"": [(""tasks"", ""get_tasks_completed_by_team_member""), (""team_member"", ""'John_Doe'"")], ""missing_action"": """"}"
+"Directive: Move all tasks with the 'enhancement' label to the 'Next Release' sprint
+Tool: move_tasks_to_sprint with args:
+- tasks (Array[Object]): List of tasks to move
+- label (String): The label to filter tasks, e.g., ""enhancement""
+- destination_sprint (String): The sprint to move tasks to, e.g., ""Next Release""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks with 'enhancement' label: get_enhancement_tasks
+- Get the 'Next Release' sprint: get_next_release_sprint","{""result"": [(""tasks"", ""get_enhancement_tasks""), (""label"", ""'enhancement'""), (""destination_sprint"", ""'Next Release'"")], ""missing_action"": """"}"
+"Directive: Identify and prioritize tasks with a due date within the next week
+Tool: prioritize_due_within_week with args:
+- tasks (Array[Object]): List of tasks to prioritize
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks with due date within the next week: get_tasks_due_within_week","{""result"": [(""tasks"", ""get_tasks_due_within_week"")], ""missing_action"": """"}"
+"Directive: Create a list of unresolved issues assigned to the current user
+Tool: create_assigned_issues_list with args:
+- issues (Array[Object]): List of unresolved issues assigned to the current user
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve unresolved issues assigned to the current user: get_assigned_unresolved_issues","{""result"": [(""issues"", ""get_assigned_unresolved_issues"")], ""missing_action"": """"}"
+"Directive: Close all tasks in the 'Testing' phase
+Tool: close_tasks_in_phase with args:
+- tasks (Array[Object]): List of tasks to close
+- phase (String): The phase to filter tasks, e.g., ""Testing""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks in the 'Testing' phase: get_testing_phase_tasks","{""result"": [(""tasks"", ""get_testing_phase_tasks""), (""phase"", ""'Testing'"")], ""missing_action"": """"}"
+"Directive: Move all high-priority tasks to the 'HighPriority' project
+Tool: move_high_priority_tasks with args:
+- tasks (Array[Object]): List of high-priority tasks to move
+- destination_project (String): The project to move tasks to, e.g., ""HighPriority""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve high-priority tasks: get_high_priority_tasks
+- Get the 'HighPriority' project: get_high_priority_project","{""result"": [(""tasks"", ""get_high_priority_tasks""), (""destination_project"", ""'HighPriority'"")], ""missing_action"": """"}"
+"Directive: Prioritize tasks with a specific tag for the upcoming sprint
+Tool: prioritize_tagged_tasks with args:
+- tasks (Array[Object]): List of tasks to prioritize
+- tag (String): The tag to filter tasks, e.g., ""urgent""
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Retrieve tasks with 'urgent' tag: get_urgent_tagged_tasks
+- Get the upcoming sprint: get_upcoming_sprint","{""result"": [(""tasks"", ""get_urgent_tagged_tasks""), (""tag"", ""'urgent'""), (""sprint"", ""get_upcoming_sprint"")], ""missing_action"": """"}"
+"Directive: Retrieve details for TKT-789
+
+Tool: get_issue_details with args:
+- issue_key (String): The key of the issue to retrieve details for
+
+Past Actions:
+- Get the ID of the current User: who_am_i","{""result"":[],""missing_action"":""Get details for TKT-789""}"
+"Directive: Assign all critical issues to DEV-TEAM
+
+Tool: assign_issues with args:
+- issues (Array[Object]): List of issues to assign
+- assignee (String): The user to assign the issues to
+
+Past Actions:
+- Get the current sprint: get_current_sprint","{""result"":[],""missing_action"":""Get the list of critical issues""}"
+"Directive: Update status of tasks in the backlog
+
+Tool: update_issue_status with args:
+- issues (Array[Object]): List of issues to update
+- new_status (String): The new status for the issues
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[],""missing_action"":""Get the list of tasks in the backlog""}"
+"Directive: Find unresolved bugs in the last release
+
+Tool: find_issues with args:
+- issue_type (String): The type of issues to find
+- release_version (String): The version of the release to search in
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[],""missing_action"":""Get the list of unresolved bugs""}"
+"Directive: Schedule a meeting for priority tasks
+
+Tool: schedule_meeting with args:
+- meeting_date (String): The date for the meeting
+- tasks (Array[Object]): List of tasks to discuss
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[],""missing_action"":""Get the list of priority tasks""}"
+"Directive: Create a report for completed user stories
+
+Tool: generate_report with args:
+- user_stories (Array[Object]): List of completed user stories
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[],""missing_action"":""Get the list of completed user stories""}"
+"Directive: Reassign unresolved issues to the support team
+
+Tool: reassign_issues with args:
+- issues (Array[Object]): List of issues to reassign
+- new_assignee (String): The user to reassign the issues to
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[(""issues"", ""reassign_issues"")],""missing_action"":""Get the list of unresolved issues""}"
+"Directive: Mark high-priority tasks as completed
+
+Tool: mark_completed with args:
+- tasks (Array[Object]): List of tasks to mark as completed
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[(""tasks"", ""mark_completed"")],""missing_action"":""Get the list of high-priority tasks""}"
+"Directive: Move all unresolved bugs to the next sprint
+
+Tool: move_issues with args:
+- issues (Array[Object]): List of issues to move
+- destination_sprint (String): The sprint to move the issues to
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the next sprint: get_next_sprint","{""result"":[(""issues"", ""move_issues"")],""missing_action"":""Get the list of unresolved bugs""}"
+"Directive: Assign highest priority tasks to the development lead
+
+Tool: assign_issues with args:
+- issues (Array[Object]): List of issues to assign
+- assignee (String): The user to assign the issues to
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[(""issues"", ""assign_issues"")],""missing_action"":""Get the list of highest priority tasks""}"
+"Directive: Review and close all completed feature requests
+
+Tool: review_and_close with args:
+- feature_requests (Array[Object]): List of feature requests to review and close
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[(""feature_requests"", ""review_and_close"")],""missing_action"":""Get the list of completed feature requests""}"
+"Directive: Update status of all tasks in progress
+
+Tool: update_status with args:
+- tasks (Array[Object]): List of tasks to update
+- new_status (String): The new status for the tasks
+
+Past Actions:
+- Get the ID of the current User: who_am_i
+- Get the current sprint: get_current_sprint","{""result"":[(""tasks"", ""update_status"")],""missing_action"":""Get the list of tasks in progress""}"
