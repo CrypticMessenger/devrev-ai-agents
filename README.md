@@ -40,9 +40,11 @@
 
 ## Comparitive Analysis between Experiements
 - Latency comparison
-![latency comparison](/images/latency_comparison.png)
+![latency_comparison](https://github.com/CrypticMessenger/devrev-ai-agents/assets/75074904/7a475f6a-53be-477f-b138-c6775c0ed7a3)
+
 - token comparison
-![token comparison](/images/token_comparison.png)
+![token_comparison](https://github.com/CrypticMessenger/devrev-ai-agents/assets/75074904/c95a125d-1e6d-4849-9eed-7497fb3a3048)
+
 
 ## How to Add/Search/get All tools?
 
