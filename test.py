@@ -1,5 +1,5 @@
 from function_embeddings.connectdb import connectdb
-from function_embeddings.get_all_tools import get_all_tools
+from function_embeddings.toolOperations import get_all_tools
 from function_embeddings.schema import *
 # from function_embeddings.PalmHelpers import run
 from function_embeddings.get_embedding import search_similar

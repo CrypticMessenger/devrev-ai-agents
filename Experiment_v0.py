@@ -30,12 +30,15 @@ def process_output(input_string) :
 # Get inference
 
 original_df = pd.read_csv("Data/test_v0.csv")
-original_df['Output_map'] = original_df['Output'].apply(process_output)
+original_df['expected_output'] = original_df['Output'].apply(process_output)
+original_df.drop('Output',axis=1,inplace=True)
 
-
-df = original_df.sample(n=20, random_state=35)
+df = original_df.sample(n=10, random_state=35)
 df = df.reset_index(drop=True)
-result_map = df.set_index('Query')['Output_map'].to_dict()
+
+
+
+result_map = df.set_index('Query')['expected_output'].to_dict()
 
 queries_with_empty_map = [query for query, value in result_map.items() if value == {}]
 
