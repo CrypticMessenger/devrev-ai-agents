@@ -38,6 +38,12 @@
 - Experiment_v0.py: We constructed a dataset and benchmarked our implementations of ReAct + Langchain.
 - Experiment_v1.py: We constructed a dataset and benchmarked our implementations of PaLM + query segementation.
 
+## Comparitive Analysis between Experiements
+- Latency comparison
+![latency comparison](/images/latency_comparison.png)
+- token comparison
+![latency comparison](/images/token_comparison.png)
+
 ## How to Add/Search/get All tools?
 
 using `add_new_tools.py` script:
