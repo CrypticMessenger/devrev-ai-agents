@@ -333,7 +333,7 @@ Question:  Summarize work items similar to don
 Thought: Let's first find relevant tools for getting work items similar to don
 Action: get_related_tools
 Action Input: ("query": "getting work items similar to don")
-Observation: ["get_similar_work_items","work_items","who_am_i"]
+Observation: ["function_name is get_similar_work_items. ....","function_name is work_items......","function_name is who_am_i....."]
 Thought: Now we have relevant tools: ["get_similar_work_items"]. Let's call it.
 Action: get_similar_work_items
 Action Input: ("work_id": "don")
@@ -341,7 +341,7 @@ Observation: No error. Proceed to next step.
 Thought: We have the work items. Now we need to find related tools to summarize them
 Action: get_related_tools
 Action Input: ("query": "to summarize work_items")
-Observation: ["summarize_objects","work_items","get_similar_work_items"]
+Observation: ["function_name is summarize_objects","function_name is work_items","function_name is get_similar_work_items"]
 Thought: Now we have related tools to summarize objects: ["summarize_objects"].
 Action: summarize_objects
 Action Input:
