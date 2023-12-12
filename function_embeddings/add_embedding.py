@@ -5,7 +5,24 @@ import time
 import json
 from .schema import *
 from .connectdb import connectdb
-from pymilvus import connections, utility
+from pymilvus import connections, Collection
+
+
+def create_index_if_not_exists(collection: Collection, model:str):
+    if len(collection.indexes) == 0: # create index if it does not exist
+        # build index
+        index_params = {"index_type": "AUTOINDEX", "metric_type": "COSINE", "params": {}}
+        t0 = time.time()
+        print("Building AutoIndex...")
+        if model=='openai':
+            collection.create_index(field_name=openai_embedding_field.name, index_params=index_params)
+        elif model=='bert':
+            collection.create_index(field_name=bert_embedding_field.name, index_params=index_params)
+        elif model=='palm':
+            collection.create_index(field_name=palm_embedding_field.name, index_params=index_params)
+
+        t1 = time.time()
+        print(f"Succeed in {round(t1-t0, 4)} seconds!")
 
 
 def add_embedding(embedding_data:json, model:str)->None:
@@ -32,23 +49,9 @@ def add_embedding(embedding_data:json, model:str)->None:
         end_flush = time.time()
         print(f"Succeed in flush in {round(end_flush - start_flush, 4)} seconds!")
 
-        
-        if len(collection.indexes) == 0:
-            # build index
-            index_params = {"index_type": "AUTOINDEX", "metric_type": "COSINE", "params": {}}
-            t0 = time.time()
-            print("Building AutoIndex...")
-            if model=='openai':
-                collection.create_index(field_name=openai_embedding_field.name, index_params=index_params)
-            elif model=='bert':
-                collection.create_index(field_name=bert_embedding_field.name, index_params=index_params)
-            elif model=='palm':
-                collection.create_index(field_name=palm_embedding_field.name, index_params=index_params)
-
-            t1 = time.time()
-            print(f"Succeed in {round(t1-t0, 4)} seconds!")
+        create_index_if_not_exists(collection=collection, model=model)
 
         connections.disconnect("default")
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"Something went wrong in function_embeddings/add_embedding.py -> add_embedding function: {e}")
     return

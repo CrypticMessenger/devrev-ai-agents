@@ -48,5 +48,5 @@ def update_embedding(embedding_data:json,model:str)->None:
 
         connections.disconnect("default")
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"Something went wrong in function_embeddings/updat_embedding.py -> update_embedding function: {e}")
     return

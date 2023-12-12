@@ -17,5 +17,5 @@ def get_all_tools(model:str)->list:
         # return all tools
         return res
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"Something went wrong in function_embeddings/get_all_tools.py -> get_all_tools function: {e}")
         return None
