@@ -26,3 +26,23 @@
 
 ## Adding a New Task
 - Guidelines or instructions for adding a new task.
+
+
+## How to Add/Search/get All tools?
+
+using `add_new_tools.py` script:
+
+1. Use `python3 add_new_tools.py --help` to view possible commands. Currently following commands are supported:
+
+- getAllTools:
+  - Arguments 1: `--model` : choices = {palm,openai}, optional, default= openai
+  - Arguments 2: `--showDescription` : Add this flag to show description of tools, along with names, optional, default= False
+  - Usage: `python3 add_new_tools.py getAllTools --model openai --showDescription`
+- searchTools:
+  - Arguments 1: `--model` : choices = {palm,openai}, optional, default= openai
+  - Arguments 2: `--toolName` : Name of tool to search, required
+  - Usage: `python3 add_new_tools.py searchTools --model openai --toolName "works_list"`
+- addTool:
+  - Arguments 1: `--model` : choices = {palm,openai}, optional, default= openai
+  - Arguments 2: `--fileName` : JSON file path where tool description is stored, required
+  - Usage: `python3 add_new_tools.py addTool --model openai --fileName "tools_description.json"`
