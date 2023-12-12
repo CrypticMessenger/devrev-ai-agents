@@ -1,31 +1,22 @@
-from collections import deque
-import os.path
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 import json
+import logging
+import os.path
+from pathlib import Path
+from collections import deque
 import google.generativeai as palm
-import spacy
+from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+from google_auth_oauthlib.flow import InstalledAppFlow
 
-my_config = json.load(open("config.json"))
+logging.basicConfig(level=logging.DEBUG)
 
-palm.configure(api_key=my_config["palm_api_key"])
-text_model = [
-    m for m in palm.list_models() if "generateText" in m.supported_generation_methods
-][0].name
-embeddings_model = [
-    m for m in palm.list_models() if "embedText" in m.supported_generation_methods
-][0].name
-
-tools = json.load(open("tools.json"))
-models = palm.list_models()
-example_prompts = json.load(open("example_prompts.json"))["examples"]
+cwd = Path.cwd().joinpath("palm_subtask_responses", "etc")
+logging.info(cwd)
 
 SCOPES = ["https://www.googleapis.com/auth/generative-language.tuning"]
 
 
-def load_creds():
+def load_creds(token_path="token.json", client_secret_path="client_secret.json"):
     """Converts `oauth-client-id.json` to a credential object.
 
     This function caches the generated tokens to minimize the use of the
@@ -35,29 +26,60 @@ def load_creds():
     # The file token.json stores the user's access and refresh tokens, and is
     # created automatically when the authorization flow completes for the first
     # time.
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    if os.path.exists(token_path):
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
     # If there are no (valid) credentials available, let the user log in.
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "client_secret_56510766963.json", SCOPES
-            )
+            flow = InstalledAppFlow.from_client_secrets_file(client_secret_path, SCOPES)
             creds = flow.run_local_server(port=0)
         # Save the credentials for the next run
-        with open("token.json", "w") as token:
+        with open(token_path, "w") as token:
             token.write(creds.to_json())
     return creds
 
 
-def generate_argument_descriptions(tools, look_in="refined_arguments_description.json"):
-    arg_prompt = json.load(open("prompts.json"))["argument_processing_prompt"]
-    if os.path.exists("refined_arguments_description.json"):
+creds = load_creds(
+    token_path=cwd.joinpath("token.json"),
+    client_secret_path=cwd.joinpath("ft_model_secret.json"),
+)
+
+# Configure PALM and fetch models
+palm.configure(credentials=creds)
+
+text_model = [
+    m for m in palm.list_models() if "generateText" in m.supported_generation_methods
+][0].name
+
+argument_mapping_model = [
+    m for m in palm.list_tuned_models() if "argumentmappingmodel" in m.name
+][0].name
+
+embeddings_model = [
+    m for m in palm.list_models() if "embedText" in m.supported_generation_methods
+][0].name
+
+logging.info(f"Using text model: {text_model}")
+logging.info(f"Using argument mapping model: {argument_mapping_model}")
+logging.info(f"Using embeddings model: {embeddings_model}")
+
+constants = json.load(open(cwd.joinpath("constants.json")))
+tools = constants["tools"]
+example_prompts = constants["examples"]
+
+
+def generate_argument_descriptions(tools, look_in=None):
+    """
+    Invokes the LLM (One-time call) to generate argument descriptions for each tool
+    and saves them in a json file.
+    """
+    arg_prompt = constants["argument_processing_prompt"]
+    if look_in is not None and os.path.exists(look_in):
         arguments_description = json.load(open(look_in, "r"))
     else:
-        for tool in tools["tools"]:
+        for tool in tools:
             arguments_description[tool["name"]] = []
             for argument in tool.get("arguments", []):
                 output = palm.generate_text(
@@ -69,13 +91,17 @@ def generate_argument_descriptions(tools, look_in="refined_arguments_description
                 arguments_description[tool["name"]].append(
                     {argument["name"]: eval(output.result)}
                 )
-        json.dump(arguments_description, open(look_in, "w"))
+        if look_in is not None:
+            json.dump(arguments_description, open(look_in, "w"))
     return arguments_description
 
 
 def get_tools_description(tools, argument_descriptions):
+    """
+    Generates a description of all tools and their arguments.
+    """
     tools_description = ""
-    for tool in tools["tools"]:
+    for tool in tools:
         tools_description += (
             "\n" + f"{tool['name']}:{tool['description'].split('.')[0]}"
         )
@@ -87,7 +113,10 @@ def get_tools_description(tools, argument_descriptions):
 
 
 def segement_task(task_statement: str):
-    segmentation_prompt = json.load(open("prompts.json"))["segmentation_prompt"]
+    """
+    Given a task statement, segments it into subtasks and performs coreference resolution
+    """
+    segmentation_prompt = constants["segmentation_prompt"]
 
     response = palm.generate_text(
         model=text_model,
@@ -100,8 +129,15 @@ def segement_task(task_statement: str):
 
 
 def get_tools_for_tasks(tasks, tools_description):
+    """
+    It takes a list of tasks and a description of all tools and their arguments
+    and returns a list of tuples of the form (task, tool) where tool is the most
+    relevant tool for the given task.
+
+    (Invokes LLM)
+    """
     output = []
-    tool_getter_prompt = json.load(open("prompts.json"))["tool_getter_prompt"]
+    tool_getter_prompt = constants["tool_getter_prompt"]
     for task in tasks:
         response = palm.generate_text(
             model=text_model,
@@ -116,15 +152,10 @@ def get_tools_for_tasks(tasks, tools_description):
     return output
 
 
-def get_relevant_tools(tasks, tools):
+def get_relevant_tools(tasks, tools, argument_descriptions):
     tools_description = get_tools_description(
         tools,
-        get_tools_description(
-            tools,
-            argument_descriptions=generate_argument_descriptions(
-                tools, look_in="refined_arguments_description.json"
-            ),
-        ),
+        argument_descriptions
     )
     return get_tools_for_tasks(tasks, tools_description)
 
@@ -133,28 +164,41 @@ class KnowledgeItem:
     description: str
     tool: str
 
-    def __init__(self, description: str, tool: str) -> None:
+    def __init__(self, description: str, tool: str, arg_mapping: tuple = None) -> None:
         self.description = description
         self.tool = tool
+        if arg_mapping:
+            self.arg_mapping = arg_mapping
+        else:
+            self.arg_mapping = ()
 
     def summarize(self) -> str:
-        return self.description + ":" + self.tool
+        return self.description + ": " + self.tool
 
     def __str__(self) -> str:
         return f"Know <{self.description} from [{self.tool}]>"
+
+    def __hash__(self) -> int:
+        return hash(str(self))
 
     def __repr__(self) -> str:
         return str(self)
 
 
 def get_base_knowledge(tools, arguments_description):
+    """
+    Returns a list of knowledge items for all tools that don't have any arguments.
+    This is called the base knowledge as it is the starting point for the inference.
+    """
     knowledge = []
+
+    l = list(arguments_description.keys())
 
     for tool in arguments_description:
         if len(arguments_description[tool]) == 0:
-            tool_names = [t["name"] for t in tools["tools"]]
+            tool_names = [t["name"] for t in tools]
             index = tool_names.index(tool)
-            tool_description = tools["tools"][index]["description"].split("Returns ")[1]
+            tool_description = tools[index]["description"]
             knowledge.append(KnowledgeItem(tool_description, tool))
 
     return knowledge
@@ -165,12 +209,9 @@ def elaborate_args(args: list[dict]):
     primary_count = 0
     for arg in args:
         for name, props in arg.items():
-            response += "\n\t"
-            if primary_count < 3:
-                response += f"{name} ({props['type']}):{props['desc']}"
-                primary_count += 1
-            else:
-                response += f"{name}:{props['desc']}"
+            response += "\n- "
+            response += f"{name} ({props['type']}): {props['desc']}"
+            primary_count += 1
             if "allowed" in props.keys():
                 response += f" allowing: {props['allowed']}"
 
@@ -183,67 +224,67 @@ def get_instruction_prompt(instruction, arguments_description, knowledge):
 
     tool_arguments = arguments_description[tool_to_be_used]
 
-    prompt = ""
-    # prompt = f"give response for:\n"
-    prompt += f"Directive:{directive}\nTool: {tool_to_be_used} with args:{elaborate_args(tool_arguments)}"
+    prompt = "Solve the 'Directive' with the given 'Tool'. Use values in 'Past Actions' or the provided directive and map values to arguments in the Tool. In case of missing info return a directive to get the missing info required to get missing info."
+    prompt += f"\nDirective:{directive}\nTool: {tool_to_be_used} with args:{elaborate_args(tool_arguments)}"
 
-    prompt += "\nPast Actions/Knowledge:"
+    prompt += "\nPast Actions:"
     for knowledge_item in knowledge[::-1]:
-        prompt += f"\n\t{knowledge_item.summarize()}"
-
-    prompt += "\nOutput:"
+        prompt += f"\n- {knowledge_item.summarize()}"
 
     return prompt
 
 
-def complete_task(instructions: deque, tools, arguments_description):
-    subtask_solution_prompt = json.load(open("prompts.json"))["subtask_solution_prompt"]
-
+def complete_task(instructions: deque, tools, arguments_description, max_iter = 10):
     knowledge = get_base_knowledge(tools, arguments_description)
 
-    total_len = 0
+    total_input_len = 0
+    total_output_len = 0
     steps = 0
 
     while len(instructions) > 0:
-        if steps > 6:
+        if steps > max_iter:
             break
+        
         steps += 1
         instruction = instructions[0]
         response = palm.generate_text(
-            model=text_model,
-            prompt=subtask_solution_prompt
-            + get_instruction_prompt(instruction, arguments_description, knowledge),
+            model=argument_mapping_model,
+            prompt=get_instruction_prompt(
+                instruction, arguments_description, knowledge
+            ),
             temperature=0,
-            # max_output_tokens=800,
+            max_output_tokens=800
         )
-        print(f"Input: {instruction}\nOutput: {response.result}")
+        
+        total_input_len += len(
+            get_instruction_prompt(instruction, arguments_description, knowledge)
+        )
+        
+        logging.debug(f"Input: {instruction}\nOutput: {response.result}")
+        
+        total_output_len += len(response.result)
+
         response = eval(response.result)
 
-        tokens = palm.count_text_tokens(
-            model=text_model,
-            prompt=subtask_solution_prompt
-            + get_instruction_prompt(instruction, arguments_description, knowledge),
-        )
-        total_len += tokens["token_count"]
+        if len(response.get("missing_action", "")) > 0:
+            logging.debug(f"Missing action: {response['missing_action']}")
 
-        if len(response["missing_action"]) > 0:
-            print(f"Missing action: {response['missing_action']}")
+            tool_for_missing_action = get_relevant_tools([response["missing_action"]], tools, arguments_description)
 
-            tool_for_missing_action = get_tools_for_tasks([response["missing_action"]])
-
-            print(f"Tool for missing action: {tool_for_missing_action}")
+            logging.debug(f"Tool for missing action: {tool_for_missing_action}")
 
             if len(tool_for_missing_action) > 0:
                 instructions.appendleft(
                     (response["missing_action"], tool_for_missing_action[0][1])
                 )
         else:
-            print(f"Result: {response['result']}")
+            logging.debug(f"Result: {response.get('result', [])}")
             instructions.popleft()
-            knowledge.append(KnowledgeItem(instruction[0], instruction[1]))
-        print()
+            knowledge.append(
+                KnowledgeItem(instruction[0], instruction[1], response["result"])
+            )
 
-    print(f"Total tokens: {total_len}")
+    logging.debug(f"Total tokens: {total_input_len}")
     return knowledge
 
 
@@ -267,7 +308,6 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
                 neighbors.update(nbs)
         item.neighbors = neighbors
 
-
     def topo_sort_util(k_item: KnowledgeItem, visited: set, stack: list):
         visited.add(k_item)
         for neighbor in k_item.neighbors:
@@ -280,7 +320,6 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
 
     topo_sort_util(final_goal, visited, stack)
 
-    # stack = stack[::-1]
     solution = []
     for item in stack:
         tool_ordering = [k_item.tool for k_item in stack]
@@ -297,11 +336,38 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
             ):
                 for v in arg[1]:
                     if v in tool_ordering:
-                        value  = f"$$PREV[{tool_ordering.index(v)}]"
+                        value = f"$$PREV[{tool_ordering.index(v)}]"
             elif arg[1] in tool_ordering:
                 value = f"$$PREV[{tool_ordering.index(arg[1])}]"
 
-            solution_item["arguments"].append({"argument_name": arg[0], "argument_value": value})
+            solution_item["arguments"].append(
+                {"argument_name": arg[0], "argument_value": value}
+            )
         solution.append(solution_item)
-    
+
     return solution
+
+
+class InferenceV1:
+    def __init__(self, tools, arg_cache = None):
+        self.tools = tools
+        self.argument_descriptions = generate_argument_descriptions(
+            self.tools, look_in=arg_cache
+        )
+    
+    def invoke_agent(self, query):
+        task_segments = segement_task(query)
+
+        task_and_tool = get_relevant_tools(task_segments, self.tools, self.argument_descriptions)
+
+        solution_knowledge = complete_task(deque(task_and_tool), self.tools, self.argument_descriptions)
+
+        final_solution = topo_sort(solution_knowledge)
+
+        return final_solution
+    
+if __name__ == "__main__":
+    arg_cache = cwd.joinpath("refined_arguments_description.json")
+    obj = InferenceV1(tools, arg_cache)
+    response = obj.invoke_agent("Prioritize my P0 issues and add them to the current sprint.")
+    print(response)
