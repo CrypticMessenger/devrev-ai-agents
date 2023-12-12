@@ -1,14 +1,18 @@
 import json
+from json import tool
 import logging
 import os.path
 from pathlib import Path
 from collections import deque
+from time import sleep
 import google.generativeai as palm
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
-
+from function_embeddings.OpenAIHelpers import OpenAIWrapper
+# from ..function_embeddings.OpenAIHelpers import OpenAIWrapper
 logging.basicConfig(level=logging.DEBUG)
+from openai import OpenAI
 
 cwd = Path.cwd().joinpath("palm_subtask_responses", "etc")
 logging.info(cwd)
@@ -103,9 +107,9 @@ def get_tools_description(tools, argument_descriptions):
     tools_description = ""
     for tool in tools:
         tools_description += (
-            "\n" + f"{tool['name']}:{tool['description'].split('.')[0]}"
+            "\n" + f"{tool['function_name']}:{tool['description'].split('.')[0]}"
         )
-        for argument in argument_descriptions[tool["name"]]:
+        for argument in argument_descriptions[tool["function_name"]]:
             tools_description += " with args:"
             for arg, props in argument.items():
                 tools_description += f"\n\t{arg}:{props['desc'].split('.')[0]}"
@@ -138,10 +142,10 @@ def get_tools_for_tasks(tasks, tools_description):
     """
     output = []
     tool_getter_prompt = constants["tool_getter_prompt"]
-    for task in tasks:
+    for task,tool_desc in zip(tasks,tools_description):
         response = palm.generate_text(
             model=text_model,
-            prompt=tool_getter_prompt % (tools_description, task),
+            prompt=tool_getter_prompt % (tool_desc, task),
             temperature=0,
             max_output_tokens=800,
         )
@@ -153,11 +157,18 @@ def get_tools_for_tasks(tasks, tools_description):
 
 
 def get_relevant_tools(tasks, tools, argument_descriptions):
-    tools_description = get_tools_description(
-        tools,
-        argument_descriptions
-    )
-    return get_tools_for_tasks(tasks, tools_description)
+    client = OpenAI(api_key = "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")
+    model = OpenAIWrapper(client)
+    tool_desc = []
+    relevant_tools = {}
+    for task in tasks:
+        relevant_tools[task] = model.get_related_tools(task)
+    
+    for task in relevant_tools.keys():
+        tool_desc.append(get_tools_description(relevant_tools[task], argument_descriptions))
+
+    # tools_description = get_tools_description(tools, argument_descriptions)
+    return get_tools_for_tasks(tasks, tool_desc)
 
 
 class KnowledgeItem:
@@ -234,7 +245,7 @@ def get_instruction_prompt(instruction, arguments_description, knowledge):
     return prompt
 
 
-def complete_task(instructions: deque, tools, arguments_description, max_iter = 10):
+def complete_task(instructions: deque, tools, arguments_description, max_iter=10):
     knowledge = get_base_knowledge(tools, arguments_description)
 
     total_input_len = 0
@@ -242,9 +253,10 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter = 
     steps = 0
 
     while len(instructions) > 0:
+        sleep(0.25)
         if steps > max_iter:
             break
-        
+
         steps += 1
         instruction = instructions[0]
         response = palm.generate_text(
@@ -253,15 +265,15 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter = 
                 instruction, arguments_description, knowledge
             ),
             temperature=0,
-            max_output_tokens=800
+            max_output_tokens=800,
         )
-        
+
         total_input_len += len(
             get_instruction_prompt(instruction, arguments_description, knowledge)
         )
-        
+
         logging.debug(f"Input: {instruction}\nOutput: {response.result}")
-        
+
         total_output_len += len(response.result)
 
         response = eval(response.result)
@@ -269,7 +281,9 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter = 
         if len(response.get("missing_action", "")) > 0:
             logging.debug(f"Missing action: {response['missing_action']}")
 
-            tool_for_missing_action = get_relevant_tools([response["missing_action"]], tools, arguments_description)
+            tool_for_missing_action = get_relevant_tools(
+                [response["missing_action"]], tools, arguments_description
+            )
 
             logging.debug(f"Tool for missing action: {tool_for_missing_action}")
 
@@ -349,25 +363,53 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
 
 
 class InferenceV1:
-    def __init__(self, tools, arg_cache = None):
+    def __init__(self, tools, arg_cache=None):
         self.tools = tools
         self.argument_descriptions = generate_argument_descriptions(
             self.tools, look_in=arg_cache
         )
-    
+
     def invoke_agent(self, query):
         task_segments = segement_task(query)
 
-        task_and_tool = get_relevant_tools(task_segments, self.tools, self.argument_descriptions)
+        logging.debug(f"Task segments: {task_segments}")
+        task_and_tool = get_relevant_tools(
+            task_segments, self.tools, self.argument_descriptions
+        )
 
-        solution_knowledge = complete_task(deque(task_and_tool), self.tools, self.argument_descriptions)
+        logging.debug(f"Task and tool: {task_and_tool}")
+
+        solution_knowledge = complete_task(
+            deque(task_and_tool), self.tools, self.argument_descriptions
+        )
+
+        print("??????????????????????")
+        for k_item in solution_knowledge:
+            logging.debug(k_item)
 
         final_solution = topo_sort(solution_knowledge)
 
         return final_solution
-    
+
+
 if __name__ == "__main__":
     arg_cache = cwd.joinpath("refined_arguments_description.json")
     obj = InferenceV1(tools, arg_cache)
-    response = obj.invoke_agent("Prioritize my P0 issues and add them to the current sprint.")
-    print(response)
+    examples = [
+        "Summarize work items similar to don:core:dvrv-us-1:devo/0:issue/1",
+        "What is the meaning of life?",
+        "Prioritize my P0 issues and add them to the current sprint",
+        "Summarize high severity tickets from the customer UltimateCustomer",
+        "What are my all issues in the triage stage under part FEAT-123? Summarize them.",
+        "List all high severity tickets coming in from slack from customer Cust123 and generate a summary of them.",
+        "Given a customer meeting transcript T, create action items and add them to my current sprint",
+        "Get all work items similar to TKT-123, summarize them, create issues from that summary, and prioritize them",
+    ]
+
+    # for example in examples:
+    #     print(example)
+    #     print(json.dumps(obj.invoke_agent(example), indent=2))
+    #     print()
+    
+    response = obj.invoke_agent("Prioritize my P0 issues and add them to the current sprint")
+    print(json.dumps(response, indent=2))
