@@ -61,13 +61,18 @@ def create_tools(tools_json):
     def get_related_tools_function(query):
         client = OpenAI(api_key = "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")
         model = OpenAIWrapper(client)
-        return model.get_related_tools(query)[:3]
+        related_tools = model.get_related_tools(query)[:3]
+        description = "The functions that can be used are "
+        for tool in related_tools:
+            description+= tool['function_name']+","        
+        for tool in related_tools:
+            description+= f"\n function_name is {tool['function_name']}. Function arguments is {tool['arguments']}"
+        return description
 
     def get_tool_arguments_function(tool_name):
         for i in range(len(tools_json['tools'])):
             if tools_json['tools'][i]['name'] in tool_name:
                 return f"{tools_json['tools'][i]['arguments']}"
-        return "what?"
         
 
 
