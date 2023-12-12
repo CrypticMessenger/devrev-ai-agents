@@ -17,11 +17,12 @@
 
 ## Memory Integration
 - **Implementation:** Directory: `Memory/`
-- Instructions on memory integration.
 
 ## Function Embeddings
 - **Implementation:** Directory: `function_embeddings`
-- Calculating function embeddings, example, and function description generation.
+- Creating rich function description using arguments and example
+- Calculating embedding and doing similarity search
+- Storing function descriptions in vector database
 
 ## Adding a New Task
 - Guidelines or instructions for adding a new task.
