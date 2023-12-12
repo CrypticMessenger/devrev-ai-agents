@@ -1,10 +1,11 @@
-
-
 import argparse
 import json
 from function_embeddings.toolOperations import get_all_tools,search_tool
+from constants import PALM_EXAMPLES_TEMPLATES, PALM_CONTEXT
 from openai import OpenAI
 from function_embeddings.OpenAIHelpers import OpenAIWrapper
+import google.generativeai as palm
+from function_embeddings.PalmHelpers import PalmWrapper
 
 def main():
     # Create an ArgumentParser object
@@ -55,24 +56,24 @@ def main():
             print(r[0]['examples'])
     
     elif args.command == "addTool":
+        json_file_path = args.fileName
+        try:
+            with open(json_file_path, 'r') as json_file:
+                tool = json.load(json_file)
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON: {e}")
+            print("The file should contain only one valid JSON object.")
+            return
+        except FileNotFoundError:
+            print(f"Error: File not found - {json_file_path}")
+            return
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
+            return
         print(f"Adding tool from file: {args.fileName} to model: {args.model}")
         if(args.model == 'openai'):
             client = OpenAI(api_key = "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")
             model = OpenAIWrapper(client)
-            json_file_path = args.fileName
-            try:
-                with open(json_file_path, 'r') as json_file:
-                    tool = json.load(json_file)
-            except json.JSONDecodeError as e:
-                print(f"Error decoding JSON: {e}")
-                print("The file should contain only one valid JSON object.")
-                return
-            except FileNotFoundError:
-                print(f"Error: File not found - {json_file_path}")
-                return
-            except Exception as e:
-                print(f"An unexpected error occurred: {e}")
-                return
             tool_name = tool['name']
         
             if(len(search_tool(args.model, tool_name))>0):
@@ -84,7 +85,6 @@ def main():
                 if 'arguments' in tool:
                     function_arguments = tool['arguments']
                 rich_desc  = f"Function name is {tool['name']}.{function_description_openai}. Arguments = {function_arguments} Examples = {function_examples}"
-                function_embedding = model.get_embedding(rich_desc)
                 function_info = {
                     'function_name': tool['name'],
                     'description': function_description_openai,
@@ -93,8 +93,25 @@ def main():
                 }
                 model.add_functionDB(function_info['function_name'],function_info['description'],function_info['examples'],function_info['arguments'])
         elif args.model == 'palm':
-            print("palm model not supported yet")
-
+            palm.configure(api_key="api-key-using-console-google")
+            model = PalmWrapper(palm,example_template=PALM_EXAMPLES_TEMPLATES, palm_context = PALM_CONTEXT)
+            tool_name = tool['name']
+        
+            if(len(search_tool(args.model, tool_name))>0):
+                print(f"Tool with name {tool_name} already exists")
+            else:
+                function_description_palm = model.create_description(tool)
+                function_examples = model.generate_examples(function_description=function_description_palm,number_of_examples=3)
+                if 'arguments' in tool:
+                    function_arguments = tool['arguments']
+                rich_desc  = f"Function name is {tool['name']}.{function_description_palm}. Arguments = {function_arguments} Examples = {function_examples}"
+                function_info = {
+                    'function_name': tool['name'],
+                    'description': function_description_palm,
+                    'examples': function_examples,
+                    'arguments': function_arguments
+                }
+                model.add_functionDB(function_info['function_name'],function_info['description'],function_info['examples'],function_info['arguments'])
     else:
         print(f"Unknown command: {args.command}")
 

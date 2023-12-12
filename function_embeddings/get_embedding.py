@@ -11,10 +11,10 @@ def load_db(collection)->None:
     try:
         # load collection
         t0 = time.time()
-        print("Loading collection...")
+        # print("Loading collection...")
         collection.load()
         t1 = time.time()
-        print(f"Succeed in {round(t1-t0, 4)} seconds!")
+        # print(f"Succeed in {round(t1-t0, 4)} seconds!")
     except Exception as e:
         print("Something went wrong in function function_embeddings/get_embedding.py -> load_db function: {e}")
 
@@ -43,7 +43,7 @@ def search_similar(embedding_data:json,model:str, metric_type="COSINE", topk=5, 
             # search_vec = [[random.random() for _ in range(dim_palm)]]
             anns_field = palm_embedding_field.name
 
-        print(f"Searching vector: {search_vec}")
+        # print(f"Searching vector: {search_vec}")
         t0 = time.time()
 
         results = collection.search(search_vec,
@@ -54,8 +54,8 @@ def search_similar(embedding_data:json,model:str, metric_type="COSINE", topk=5, 
                                 output_fields=['function_name', 'description', 'embedding', 'examples','arguments']
                                 )
         t1 = time.time()
-        print(f"Result:{results}")
-        print(f"Search latency: {round(t1-t0, 4)} seconds!")
+        # print(f"Result:{results}")
+        # print(f"Search latency: {round(t1-t0, 4)} seconds!")
         
         collection.release()
         connections.disconnect("default")
