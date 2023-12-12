@@ -3,13 +3,13 @@
 ## Setup
 - Use `python -r requirements.txt` for initial setup and dependency installation.
 
-## Langchain Usage
+## Langchain Demo
 - **Implementation:** Directory: `Langchain/`
 - **How to run:**
-    1. Update query in `Langchain_inference.py`
-    2. Run `python Langchain_Inference.py`
+    1. Update query in `LangchainDemo.py`
+    2. Run `python LangchainDemo.py`
 
-## Palm Integration
+## PalmSeg Demo
 - **Implementation:** Directory: `palm_subtask_responses/`
 - **How to run:**
     1. Update query in `PalmSegDemo.py`
