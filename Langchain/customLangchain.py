@@ -24,13 +24,19 @@ from langchain.llms import GooglePalm
 # import tools.py functions from directory
 from .tools import *
 
+def estimate_tokens(text):
+    # Split text into tokens (considering words as tokens here)
+    tokens = text.split()
+    return len(tokens)
+
 
 llm = GooglePalm(temperature=0, google_api_key='AIzaSyAq9RCFh9Jx5t9oR20xWRAZdXsn-b01pT8')
 # llm = OpenAI(temperature=0, openai_api_key='')
 
+input_tokens = 0
+output_tokens = 0
 
 class CustomOutputParser(AgentOutputParser):
-
     def create_map(self,ans):
         final_ans = []
         lines = ans.split('\n')
@@ -62,9 +68,10 @@ class CustomOutputParser(AgentOutputParser):
 
 
     def parse(self, llm_output: str) -> Union[AgentAction, AgentFinish]:
-
-        print("llm_output: ",llm_output)
+        # print("llm_output: ",llm_output)
         # Check if agent should finish
+        global output_tokens
+        output_tokens+= estimate_tokens(llm_output)
         if "Final Answer:" in llm_output:
             return AgentFinish(
                 # Return values is generally always a dictionary with a single `output` key
@@ -87,7 +94,6 @@ class CustomPromptTemplate(StringPromptTemplate):
     template: str
     # The list of tools available
     tools: List[Tool]
-
     def format(self, **kwargs) -> str:
         # Get the intermediate steps (AgentAction, Observation tuples)
         # Format them in a particular way
@@ -104,8 +110,8 @@ class CustomPromptTemplate(StringPromptTemplate):
         kwargs["tool_names"] = ", ".join([tool.name for tool in self.tools])
 
         final_template = self.template.format(**kwargs)
-
-        print("final prompt: ", final_template)
+        global input_tokens
+        input_tokens+= estimate_tokens(final_template)
         return final_template
 
 
@@ -133,10 +139,14 @@ class Inference:
             allowed_tools=self.tool_names
         )
 
-        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True,max_iterations=5000)
+        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=False,max_iterations=5000)
 
     def invoke_agent(self, input_question):
+        global input_tokens
+        global output_tokens
+        input_tokens = 0
+        output_tokens = 0
         print("Agent Invoked")
         print(f"Input Question: {input_question}")
         output = self.agent_executor.invoke({"input": input_question})
-        return output['output']
+        return output['output'],input_tokens,output_tokens
