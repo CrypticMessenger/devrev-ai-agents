@@ -462,7 +462,7 @@ class InferenceV1:
         except Exception as e:
             final_solution = []
 
-        return final_solution, input_tokens, output_tokens
+        return final_solution, input_tokens//4, output_tokens//4
 
 
 if __name__ == "__main__":
