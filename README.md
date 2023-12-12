@@ -42,7 +42,7 @@
 - Latency comparison
 ![latency comparison](/images/latency_comparison.png)
 - token comparison
-![latency comparison](/images/token_comparison.png)
+![token comparison](/images/token_comparison.png)
 
 ## How to Add/Search/get All tools?
 
