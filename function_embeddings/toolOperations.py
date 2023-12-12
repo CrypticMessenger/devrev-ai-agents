@@ -17,7 +17,7 @@ def get_all_tools(model:str,output_fields=['function_name', 'description', 'embe
         # return all tools
         return res
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"Something went wrong in function_embeddings/toolOperations.py -> get_all_tools function: {e}")
         return None
     
 def search_tool(model:str, tool_name:str, output_fields=['function_name', 'description', 'embedding', 'examples','arguments'])->list:
@@ -37,5 +37,5 @@ def search_tool(model:str, tool_name:str, output_fields=['function_name', 'descr
         # return all tools
         return res
     except Exception as e:
-        print(f"Something went wrong: {e}")
+        print(f"Something went wrong in function_embeddings/toolOperations.py -> search_tool function: {e}")
         return None

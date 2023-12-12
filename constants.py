@@ -4,6 +4,14 @@ Output: query1:Given a customer meeting transcript T, create action items. query
 Create {number_of_examples} examples for the function. Create example queries to cover important aspects of the function.
 """
 
+PALM_EXAMPLES_TEMPLATES = [
+    ('Function description: Function Name is create_actionable_tasks_from_text. Description:Given a text, extracts actionable insights, and creates tasks for them, which are kind of a work item. [argument name - text, description = The text from which the actionable insights need to be created.',
+     '''query1:Given a customer meeting transcript T, create action items. query2: Given summary S of sprint, create action items. Create {number_of_examples} examples for the function. Create example queries to cover important aspects of the function.'''
+     )
+]
+
+PALM_CONTEXT = "You will be given a function description, for this function create chat examples queries of user for which the function can be used."
+
 all_tools = {
   "tools": [
     {

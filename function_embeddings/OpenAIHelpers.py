@@ -4,7 +4,7 @@ from pymilvus import connections
 from .tools import create_description,create_description_with_example
 import json 
 import numpy as np
-from .add_embedding import add_embedding
+from .add_embedding import add_embedding, create_index_if_not_exists
 from .get_embedding import search_similar
 from .update_embedding import update_embedding
 from .connectdb import connectdb, disconnectdb
@@ -44,12 +44,17 @@ class OpenAIWrapper:
     # check if the function_exists or not
     collection = connectdb('openai')
 
+    create_index_if_not_exists(collection, model='openai') # create index if not exists already
+
+    collection.load() #load collection
+
     boolean_expr = f'function_name=="{function_name}"'
     res = collection.query(
       expr = boolean_expr,
       output_fields = ['function_name', 'description', 'embedding', 'examples','arguments'],
       limit=1
     )
+    collection.release()
 
     # if function alreadys exists in the db, simply return that
     if len(res) != 0:
@@ -103,11 +108,6 @@ class OpenAIWrapper:
     #implement logic of getting tools
     embedding = self.get_embedding(query)
 
-    # data = {
-    #   'model':'openai',
-    #   'embedding':embedding
-    # }
-
     result = search_similar(embedding, model='openai')
     return result
 
@@ -125,7 +125,7 @@ class OpenAIWrapper:
     return response.choices[0].message.content
 
 if __name__=="__main__":
-  client = OpenAI(api_key = "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")
+  client = OpenAI(api_key = "open-ai-api-key")
   model = OpenAIWrapper(client)
   json_file_path = "function_embeddings/function_embeddings_openai_updated.json"
   data = []
