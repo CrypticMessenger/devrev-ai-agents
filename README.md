@@ -39,10 +39,10 @@
 - Experiment_v1.py: We constructed a dataset and benchmarked our implementations of PaLM + query segementation.
 
 ## Comparitive Analysis between Experiements
-- Latency comparison
+- Latency comparison <br/>
 ![latency_comparison](https://github.com/CrypticMessenger/devrev-ai-agents/assets/75074904/7a475f6a-53be-477f-b138-c6775c0ed7a3)
 
-- token comparison
+- token comparison <br/>
 ![token_comparison](https://github.com/CrypticMessenger/devrev-ai-agents/assets/75074904/c95a125d-1e6d-4849-9eed-7497fb3a3048)
 
 
