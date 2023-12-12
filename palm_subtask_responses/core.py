@@ -11,11 +11,14 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from function_embeddings.OpenAIHelpers import OpenAIWrapper
 # from ..function_embeddings.OpenAIHelpers import OpenAIWrapper
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 from openai import OpenAI
 
 cwd = Path.cwd().joinpath("palm_subtask_responses", "etc")
 logging.info(cwd)
+
+input_tokens = 0
+output_tokens = 0
 
 SCOPES = ["https://www.googleapis.com/auth/generative-language.tuning"]
 
@@ -83,15 +86,20 @@ def generate_argument_descriptions(tools, look_in=None):
     if look_in is not None and os.path.exists(look_in):
         arguments_description = json.load(open(look_in, "r"))
     else:
+        arguments_description = {}
         for tool in tools:
             arguments_description[tool["name"]] = []
             for argument in tool.get("arguments", []):
+                global input_tokens
+                input_tokens += len(arg_prompt % argument)
                 output = palm.generate_text(
                     model=text_model,
                     prompt=arg_prompt % argument,
                     temperature=0,
                     max_output_tokens=800,
                 )
+                global output_tokens
+                output_tokens += len(output.result)
                 arguments_description[tool["name"]].append(
                     {argument["name"]: eval(output.result)}
                 )
@@ -107,9 +115,9 @@ def get_tools_description(tools, argument_descriptions):
     tools_description = ""
     for tool in tools:
         tools_description += (
-            "\n" + f"{tool['function_name']}:{tool['description'].split('.')[0]}"
+            "\n" + f"{tool['name']}:{tool['description'].split('.')[0]}"
         )
-        for argument in argument_descriptions[tool["function_name"]]:
+        for argument in argument_descriptions[tool["name"]]:
             tools_description += " with args:"
             for arg, props in argument.items():
                 tools_description += f"\n\t{arg}:{props['desc'].split('.')[0]}"
@@ -121,18 +129,21 @@ def segement_task(task_statement: str):
     Given a task statement, segments it into subtasks and performs coreference resolution
     """
     segmentation_prompt = constants["segmentation_prompt"]
-
+    global input_tokens
+    input_tokens += len(segmentation_prompt % task_statement)
     response = palm.generate_text(
         model=text_model,
         prompt=segmentation_prompt % task_statement,
         temperature=0,
         max_output_tokens=800,
     )
+    global output_tokens
+    output_tokens += len(response.result)
 
     return eval(response.result)
 
 
-def get_tools_for_tasks(tasks, tools_description):
+def get_tools_for_tasks_embeddings(tasks, tools_description):
     """
     It takes a list of tasks and a description of all tools and their arguments
     and returns a list of tuples of the form (task, tool) where tool is the most
@@ -143,12 +154,19 @@ def get_tools_for_tasks(tasks, tools_description):
     output = []
     tool_getter_prompt = constants["tool_getter_prompt"]
     for task,tool_desc in zip(tasks,tools_description):
+        global input_tokens
+        input_tokens += len(tool_getter_prompt % (tool_desc, task))
+        
         response = palm.generate_text(
             model=text_model,
             prompt=tool_getter_prompt % (tool_desc, task),
             temperature=0,
             max_output_tokens=800,
         )
+        
+        global output_tokens
+        output_tokens += len(response.result)
+
         result = response.result
         if result == "None":
             return []
@@ -156,7 +174,7 @@ def get_tools_for_tasks(tasks, tools_description):
     return output
 
 
-def get_relevant_tools(tasks, tools, argument_descriptions):
+def get_relevant_tools_embeddings(tasks, tools, argument_descriptions):
     client = OpenAI(api_key = "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")
     model = OpenAIWrapper(client)
     tool_desc = []
@@ -169,6 +187,42 @@ def get_relevant_tools(tasks, tools, argument_descriptions):
 
     # tools_description = get_tools_description(tools, argument_descriptions)
     return get_tools_for_tasks(tasks, tool_desc)
+
+def get_tools_for_tasks(tasks, tools_description):
+    """
+    It takes a list of tasks and a description of all tools and their arguments
+    and returns a list of tuples of the form (task, tool) where tool is the most
+    relevant tool for the given task.
+
+    (Invokes LLM)
+    """
+    output = []
+    tool_getter_prompt = constants["tool_getter_prompt"]
+    for task in tasks:
+        global input_tokens
+        input_tokens += len(tool_getter_prompt % (tools_description, task))
+
+        response = palm.generate_text(
+            model=text_model,
+            prompt=tool_getter_prompt % (tools_description, task),
+            temperature=0,
+            max_output_tokens=800,
+        )
+
+        global output_tokens
+        output_tokens += len(response.result)
+        
+        result = response.result
+        if result == "None":
+            return []
+        output.append((task, response.result))
+    return output
+
+
+def get_relevant_tools(tasks, tools, argument_descriptions):
+    tools_description = get_tools_description(tools, argument_descriptions)
+    # print(tools_description)
+    return get_tools_for_tasks(tasks, tools_description)
 
 
 class KnowledgeItem:
@@ -252,13 +306,24 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter=10
     total_output_len = 0
     steps = 0
 
+    if len(instructions) == 0:
+        return []
+
     while len(instructions) > 0:
-        sleep(0.25)
+        sleep(0.5)
         if steps > max_iter:
             break
 
         steps += 1
         instruction = instructions[0]
+
+        global input_tokens
+        input_tokens += len(
+            get_instruction_prompt(
+                instruction, arguments_description, knowledge
+            )
+        )
+
         response = palm.generate_text(
             model=argument_mapping_model,
             prompt=get_instruction_prompt(
@@ -267,6 +332,9 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter=10
             temperature=0,
             max_output_tokens=800,
         )
+
+        global output_tokens
+        output_tokens += len(response.result)
 
         total_input_len += len(
             get_instruction_prompt(instruction, arguments_description, knowledge)
@@ -302,19 +370,21 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter=10
     return knowledge
 
 
-def topo_sort(knowledge: list[KnowledgeItem]) -> list:
+from copy import deepcopy
+
+
+def topo_sort(knowledge: list[KnowledgeItem], arguments_description) -> list:
     """Returns a topologically sorted list of knowledge items."""
+    if len(knowledge) == 0:
+        return []
+
+    knowledge = deepcopy(knowledge)
     final_goal = knowledge[-1]
     for item in knowledge:
         neighbors = set()
         for arg in item.arg_mapping:
             # print(arg)
-            if (
-                isinstance(arg[1], list)
-                or isinstance(arg[1], tuple)
-                or isinstance(arg[1], set)
-                or isinstance(arg[1], dict)
-            ):
+            if isinstance(arg[1], list):
                 nbs = [k_item for k_item in knowledge if k_item.tool in arg[1]]
                 neighbors.update(nbs)
             else:
@@ -334,23 +404,22 @@ def topo_sort(knowledge: list[KnowledgeItem]) -> list:
 
     topo_sort_util(final_goal, visited, stack)
 
+    # stack = stack[::-1]
     solution = []
     for item in stack:
         tool_ordering = [k_item.tool for k_item in stack]
+        tool_args = [list(d.keys())[0] for d in arguments_description[item.tool]]
         solution_item = {}
         solution_item["tool_name"] = item.tool
         solution_item["arguments"] = []
         for arg in item.arg_mapping:
+            if arg[0] not in tool_args:
+                continue
             value = arg[1]
-            if (
-                isinstance(arg[1], list)
-                or isinstance(arg[1], tuple)
-                or isinstance(arg[1], set)
-                or isinstance(arg[1], dict)
-            ):
-                for v in arg[1]:
-                    if v in tool_ordering:
-                        value = f"$$PREV[{tool_ordering.index(v)}]"
+            if isinstance(arg[1], list):
+                for i in range(len(arg[1])):
+                    if arg[1][i] in tool_ordering:
+                        value[i] = f"$$PREV[{tool_ordering.index(arg[1][i])}]"
             elif arg[1] in tool_ordering:
                 value = f"$$PREV[{tool_ordering.index(arg[1])}]"
 
@@ -370,26 +439,30 @@ class InferenceV1:
         )
 
     def invoke_agent(self, query):
-        task_segments = segement_task(query)
+        global input_tokens
+        global output_tokens
 
-        logging.debug(f"Task segments: {task_segments}")
-        task_and_tool = get_relevant_tools(
-            task_segments, self.tools, self.argument_descriptions
-        )
+        input_tokens = 0
+        output_tokens = 0
+        try:
+            task_segments = segement_task(query)
 
-        logging.debug(f"Task and tool: {task_and_tool}")
+            logging.debug(f"Task segments: {task_segments}")
+            task_and_tool = get_relevant_tools(
+                task_segments, self.tools, self.argument_descriptions
+            )
 
-        solution_knowledge = complete_task(
-            deque(task_and_tool), self.tools, self.argument_descriptions
-        )
+            logging.debug(f"Task and tool: {task_and_tool}")
 
-        print("??????????????????????")
-        for k_item in solution_knowledge:
-            logging.debug(k_item)
+            solution_knowledge = complete_task(
+                deque(task_and_tool), self.tools, self.argument_descriptions
+            )
 
-        final_solution = topo_sort(solution_knowledge)
+            final_solution = topo_sort(solution_knowledge, self.argument_descriptions)
+        except Exception as e:
+            final_solution = []
 
-        return final_solution
+        return final_solution, input_tokens, output_tokens
 
 
 if __name__ == "__main__":
@@ -411,5 +484,5 @@ if __name__ == "__main__":
     #     print(json.dumps(obj.invoke_agent(example), indent=2))
     #     print()
     
-    response = obj.invoke_agent("Prioritize my P0 issues and add them to the current sprint")
+    response, iptoken, optoken = obj.invoke_agent("Prioritize my P0 issues and add them to the current sprint")
     print(json.dumps(response, indent=2))
