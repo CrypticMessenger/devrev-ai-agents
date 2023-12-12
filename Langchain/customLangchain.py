@@ -26,8 +26,7 @@ from .tools import *
 
 def estimate_tokens(text):
     # Split text into tokens (considering words as tokens here)
-    tokens = text.split()
-    return len(tokens)
+    return len(text)/8
 
 
 llm = GooglePalm(temperature=0, google_api_key='AIzaSyAq9RCFh9Jx5t9oR20xWRAZdXsn-b01pT8')
@@ -89,6 +88,13 @@ class CustomOutputParser(AgentOutputParser):
         # Return the action and action input
         return AgentAction(tool=action, tool_input=action_input.strip(" ").strip('"'), log=llm_output)
 
+def extract_function_names(text):
+    # Define the pattern to find function names
+    text = f'{text}'
+    pattern = r"function_name is ([\w\s-]+)\."
+    # Find all matches using regex
+    matches = re.findall(pattern, text) 
+    return matches
 class CustomPromptTemplate(StringPromptTemplate):
     # The template to use
     template: str
@@ -99,15 +105,20 @@ class CustomPromptTemplate(StringPromptTemplate):
         # Format them in a particular way
         intermediate_steps = kwargs.pop("intermediate_steps")
         thoughts = ""
+        total_steps = len(intermediate_steps)
+        idx = 0
         for action, observation in intermediate_steps:
             thoughts += action.log
+            if idx < total_steps-3:
+                if len(extract_function_names(observation))!=0:
+                    thoughts+= f"\nObservation: {extract_function_names(observation)}\nThought: "
+                    continue
             thoughts += f"\nObservation: {observation}\nThought: "
+            idx+=1
+
         # Set the agent_scratchpad variable to that value
         kwargs["agent_scratchpad"] = thoughts
         # Create a tools variable from the list of tools provided
-        # kwargs["tools"] = "\n".join([f"{tool.name}: {tool.description}" for tool in self.tools])
-        # # Create a list of tool names for the tools provided
-        # kwargs["tool_names"] = ", ".join([tool.name for tool in self.tools])
 
         final_template = self.template.format(**kwargs)
         global input_tokens
@@ -116,9 +127,9 @@ class CustomPromptTemplate(StringPromptTemplate):
 
 
 class Inference:
-    def __init__(self,prompt_template,all_tools_json):
+    def __init__(self,prompt_template,all_tools):
         
-        self.tools = create_tools(all_tools_json)
+        self.tools = all_tools
 
         self.prompt = CustomPromptTemplate(
             template=prompt_template,
@@ -139,7 +150,7 @@ class Inference:
             allowed_tools=self.tool_names
         )
 
-        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=False,max_iterations=5000)
+        self.agent_executor = AgentExecutor.from_agent_and_tools(agent=agent, tools=self.tools, verbose=True,max_iterations=5000)
 
     def invoke_agent(self, input_question):
         global input_tokens
