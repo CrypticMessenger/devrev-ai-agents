@@ -1,0 +1,35 @@
+Query,Output
+"Retrieve work items in the ""In Progress"" stage owned by ""USER-456"" and ""USER-789"", summarize them, and prioritize by severity.","[
+  {
+    ""tool_name"": ""works_list"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""stage_name"",
+        ""argument_value"": [""In Progress""]
+      },
+      {
+        ""argument_name"": ""owned_by"",
+        ""argument_value"": [""USER-456"", ""USER-789""]
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""summarize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[0]""
+      }
+    ]
+  },
+  {
+    ""tool_name"": ""prioritize_objects"",
+    ""arguments"": [
+      {
+        ""argument_name"": ""objects"",
+        ""argument_value"": ""$$PREV[1]""
+      }
+    ]
+  }
+]
+"

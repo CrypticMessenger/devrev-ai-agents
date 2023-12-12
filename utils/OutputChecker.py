@@ -83,7 +83,8 @@ def compare_lists_of_tools(list1, list2):
          map2[tool_name] = [item['arguments']]
       else:
          map2[tool_name].append(item['arguments'])
-    return score_calc(map1,map2)
+    list_size = len(list1)
+    return score_calc(map1,map2)==list_size
 
 
 if __name__=='__main__':

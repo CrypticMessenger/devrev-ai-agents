@@ -34,7 +34,7 @@ original_df = pd.read_csv("Data/Testing dataset.csv")
 original_df['expected_output'] = original_df['Output'].apply(process_output)
 original_df.drop('Output',axis=1,inplace=True)
 
-df = original_df.sample(n=20, random_state=35)
+df = original_df.sample(n=5, random_state=35)
 df = df.reset_index(drop=True)
 
 
