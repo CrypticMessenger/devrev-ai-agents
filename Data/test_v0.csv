@@ -4,7 +4,7 @@ Query,Output
     ""tool_name"": ""works_list"",
     ""arguments"": [
       {
-        ""argument_name"": ""stage.name"",
+        ""argument_name"": ""stage_name"",
         ""argument_value"": [""In Progress""]
       },
       {
@@ -724,7 +724,7 @@ json","[
         ""argument_value"": [""DEVU-987"", ""DEVU-654""]
       },
       {
-        ""argument_name"": ""stage.name"",
+        ""argument_name"": ""stage_name"",
         ""argument_value"": [""Review""]
       }
     ]
@@ -762,7 +762,7 @@ json","[
         ""argument_value"": [""$$PREV[0]""]
       },
       {
-        ""argument_name"": ""stage.name"",
+        ""argument_name"": ""stage_name"",
         ""argument_value"": [""Completed""]
       }
     ]
