@@ -1,4 +1,5 @@
 import json
+from json import tool
 import logging
 import os.path
 from pathlib import Path
@@ -8,8 +9,10 @@ import google.generativeai as palm
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
-
+from function_embeddings.OpenAIHelpers import OpenAIWrapper
+# from ..function_embeddings.OpenAIHelpers import OpenAIWrapper
 logging.basicConfig(level=logging.DEBUG)
+from openai import OpenAI
 
 cwd = Path.cwd().joinpath("palm_subtask_responses", "etc")
 logging.info(cwd)
@@ -104,9 +107,9 @@ def get_tools_description(tools, argument_descriptions):
     tools_description = ""
     for tool in tools:
         tools_description += (
-            "\n" + f"{tool['name']}:{tool['description'].split('.')[0]}"
+            "\n" + f"{tool['function_name']}:{tool['description'].split('.')[0]}"
         )
-        for argument in argument_descriptions[tool["name"]]:
+        for argument in argument_descriptions[tool["function_name"]]:
             tools_description += " with args:"
             for arg, props in argument.items():
                 tools_description += f"\n\t{arg}:{props['desc'].split('.')[0]}"
@@ -139,10 +142,10 @@ def get_tools_for_tasks(tasks, tools_description):
     """
     output = []
     tool_getter_prompt = constants["tool_getter_prompt"]
-    for task in tasks:
+    for task,tool_desc in zip(tasks,tools_description):
         response = palm.generate_text(
             model=text_model,
-            prompt=tool_getter_prompt % (tools_description, task),
+            prompt=tool_getter_prompt % (tool_desc, task),
             temperature=0,
             max_output_tokens=800,
         )
@@ -154,8 +157,18 @@ def get_tools_for_tasks(tasks, tools_description):
 
 
 def get_relevant_tools(tasks, tools, argument_descriptions):
-    tools_description = get_tools_description(tools, argument_descriptions)
-    return get_tools_for_tasks(tasks, tools_description)
+    client = OpenAI(api_key = "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")
+    model = OpenAIWrapper(client)
+    tool_desc = []
+    relevant_tools = {}
+    for task in tasks:
+        relevant_tools[task] = model.get_related_tools(task)
+    
+    for task in relevant_tools.keys():
+        tool_desc.append(get_tools_description(relevant_tools[task], argument_descriptions))
+
+    # tools_description = get_tools_description(tools, argument_descriptions)
+    return get_tools_for_tasks(tasks, tool_desc)
 
 
 class KnowledgeItem:
