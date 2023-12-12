@@ -1,35 +1,42 @@
 # devrev-ai-agents
 
 ## Setup
-- Use `python -r requirements.txt` for initial setup and dependency installation.
+
+- Use `pip install -r requirements.txt` for initial setup and dependency installation.
 
 ## Langchain Demo
+
 - **Implementation:** Directory: `Langchain/`
 - **How to run:**
-    1. Update query in `LangchainDemo.py`
-    2. Run `python LangchainDemo.py`
+  1. Update query in `LangchainDemo.py`
+  2. Run `python LangchainDemo.py`
 
 ## PalmSeg Demo
+
 - **Implementation:** Directory: `palm_subtask_responses/`
 - **How to run:**
-    1. Update query in `PalmSegDemo.py`
-    2. Run `python PalmSegDemo.py`
+  1. Update query in `PalmSegDemo.py`
+  2. Run `python PalmSegDemo.py`
 
 ## Memory Integration
+
 - **Implementation:** Directory: `Memory/`
 
 ## Function Embeddings
+
 - **Implementation:** Directory: `function_embeddings`
 - Creating rich function description using arguments and example
 - Calculating embedding and doing similarity search
 - Storing function descriptions in vector database
 
 ## Adding a New Task
+
 - Guidelines or instructions for adding a new task.
 
 ## Experiments description:
--  Experiment_v0.py: We constructed a dataset and benchmarked our implementations of ReAct + Langchain.
--  Experiment_v1.py:  We constructed a dataset and benchmarked our implementations of PaLM + query segementation.
+
+- Experiment_v0.py: We constructed a dataset and benchmarked our implementations of ReAct + Langchain.
+- Experiment_v1.py: We constructed a dataset and benchmarked our implementations of PaLM + query segementation.
 
 ## How to Add/Search/get All tools?
 
