@@ -27,6 +27,9 @@
 ## Adding a New Task
 - Guidelines or instructions for adding a new task.
 
+## Experiments description:
+-  Experiment_v0.py: We constructed a dataset and benchmarked our implementations of ReAct + Langchain.
+-  Experiment_v1.py:  We constructed a dataset and benchmarked our implementations of PaLM + query segementation.
 
 ## How to Add/Search/get All tools?
 
