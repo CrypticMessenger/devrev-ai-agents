@@ -1,0 +1,6 @@
+langchain
+openai
+google.generativeai
+pymilvus
+google_auth_oauthlib
+matplotlib

@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"Accuracy": 0.6, "Average Inference Time": 38.998693227767944, "Average Input Tokens": 12578.2, "Average Output Tokens": 392.6}
+=======
+{"Accuracy": 0.3, "Average Inference Time": 17.461175394058227, "Average Input Tokens": 3326.9, "Average Output Tokens": 101.2}
+>>>>>>> e013b07b0efd0f816252b236112ebba808824ccd
