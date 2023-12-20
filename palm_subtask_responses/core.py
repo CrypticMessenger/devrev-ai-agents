@@ -9,13 +9,18 @@ import google.generativeai as palm
 from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
-from function_embeddings.OpenAIHelpers import OpenAIWrapper
+# from function_embeddings.OpenAIHelpers import OpenAIWrapper
 # from ..function_embeddings.OpenAIHelpers import OpenAIWrapper
 logging.basicConfig(level=logging.INFO)
 from openai import OpenAI
 
 cwd = Path.cwd().joinpath("palm_subtask_responses", "etc")
 logging.info(cwd)
+
+generation_config = {
+    'temperature': 0,
+    'max_output_tokens': 800,
+}
 
 input_tokens = 0
 output_tokens = 0
@@ -57,12 +62,14 @@ creds = load_creds(
 palm.configure(credentials=creds)
 
 text_model = [
-    m for m in palm.list_models() if "generateText" in m.supported_generation_methods
+    m for m in palm.list_models() if "generateContent" in m.supported_generation_methods
 ][0].name
+text_model = palm.GenerativeModel(text_model)
 
 argument_mapping_model = [
     m for m in palm.list_tuned_models() if "argumentmappingmodel" in m.name
 ][0].name
+
 
 embeddings_model = [
     m for m in palm.list_models() if "embedText" in m.supported_generation_methods
@@ -92,16 +99,14 @@ def generate_argument_descriptions(tools, look_in=None):
             for argument in tool.get("arguments", []):
                 global input_tokens
                 input_tokens += len(arg_prompt % argument)
-                output = palm.generate_text(
-                    model=text_model,
-                    prompt=arg_prompt % argument,
-                    temperature=0,
-                    max_output_tokens=800,
+                output = text_model.generate_content(
+                    arg_prompt % argument,
+                    generation_config=generation_config,
                 )
                 global output_tokens
-                output_tokens += len(output.result)
+                output_tokens += len(output.text)
                 arguments_description[tool["name"]].append(
-                    {argument["name"]: eval(output.result)}
+                    {argument["name"]: eval(output.text)}
                 )
         if look_in is not None:
             json.dump(arguments_description, open(look_in, "w"))
@@ -131,62 +136,60 @@ def segement_task(task_statement: str):
     segmentation_prompt = constants["segmentation_prompt"]
     global input_tokens
     input_tokens += len(segmentation_prompt % task_statement)
-    response = palm.generate_text(
-        model=text_model,
-        prompt=segmentation_prompt % task_statement,
-        temperature=0,
-        max_output_tokens=800,
+    response = text_model.generate_content(
+        segmentation_prompt % task_statement,
+        generation_config=generation_config,
     )
     global output_tokens
-    output_tokens += len(response.result)
+    output_tokens += len(response.text)
 
-    return eval(response.result)
+    return eval(response.text)
 
 
-def get_tools_for_tasks_embeddings(tasks, tools_description):
-    """
-    It takes a list of tasks and a description of all tools and their arguments
-    and returns a list of tuples of the form (task, tool) where tool is the most
-    relevant tool for the given task.
+# def get_tools_for_tasks_embeddings(tasks, tools_description):
+#     """
+#     It takes a list of tasks and a description of all tools and their arguments
+#     and returns a list of tuples of the form (task, tool) where tool is the most
+#     relevant tool for the given task.
 
-    (Invokes LLM)
-    """
-    output = []
-    tool_getter_prompt = constants["tool_getter_prompt"]
-    for task,tool_desc in zip(tasks,tools_description):
-        global input_tokens
-        input_tokens += len(tool_getter_prompt % (tool_desc, task))
+#     (Invokes LLM)
+#     """
+#     output = []
+#     tool_getter_prompt = constants["tool_getter_prompt"]
+#     for task,tool_desc in zip(tasks,tools_description):
+#         global input_tokens
+#         input_tokens += len(tool_getter_prompt % (tool_desc, task))
         
-        response = palm.generate_text(
-            model=text_model,
-            prompt=tool_getter_prompt % (tool_desc, task),
-            temperature=0,
-            max_output_tokens=800,
-        )
+#         response = text_model.generate_content(
+            # model=text_model,
+#             prompt=tool_getter_prompt % (tool_desc, task),
+#             temperature=0,
+#             max_output_tokens=800,
+#         )
         
-        global output_tokens
-        output_tokens += len(response.result)
+#         global output_tokens
+#         output_tokens += len(response.text)
 
-        result = response.result
-        if result == "None":
-            return []
-        output.append((task, response.result))
-    return output
+#         result = response.text
+#         if result == "None":
+#             return []
+#         output.append((task, result))
+#     return output
 
 
-def get_relevant_tools_embeddings(tasks, tools, argument_descriptions):
-    client = OpenAI(api_key = "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")
-    model = OpenAIWrapper(client)
-    tool_desc = []
-    relevant_tools = {}
-    for task in tasks:
-        relevant_tools[task] = model.get_related_tools(task)
+# def get_relevant_tools_embeddings(tasks, tools, argument_descriptions):
+#     client = OpenAI(api_key = "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")
+#     model = OpenAIWrapper(client)
+#     tool_desc = []
+#     relevant_tools = {}
+#     for task in tasks:
+#         relevant_tools[task] = model.get_related_tools(task)
     
-    for task in relevant_tools.keys():
-        tool_desc.append(get_tools_description(relevant_tools[task], argument_descriptions))
+#     for task in relevant_tools.keys():
+#         tool_desc.append(get_tools_description(relevant_tools[task], argument_descriptions))
 
-    # tools_description = get_tools_description(tools, argument_descriptions)
-    return get_tools_for_tasks(tasks, tool_desc)
+#     # tools_description = get_tools_description(tools, argument_descriptions)
+#     return get_tools_for_tasks(tasks, tool_desc)
 
 def get_tools_for_tasks(tasks, tools_description):
     """
@@ -202,20 +205,18 @@ def get_tools_for_tasks(tasks, tools_description):
         global input_tokens
         input_tokens += len(tool_getter_prompt % (tools_description, task))
 
-        response = palm.generate_text(
-            model=text_model,
-            prompt=tool_getter_prompt % (tools_description, task),
-            temperature=0,
-            max_output_tokens=800,
+        response = text_model.generate_content(
+            tool_getter_prompt % (tools_description, task),
+            generation_config=generation_config,
         )
-
+        # print(tool_getter_prompt % (tools_description, task),)
         global output_tokens
-        output_tokens += len(response.result)
+        output_tokens += len(response.text)
         
-        result = response.result
+        result = response.text
         if result == "None":
             return []
-        output.append((task, response.result))
+        output.append((task, response.text))
     return output
 
 
@@ -366,7 +367,7 @@ def complete_task(instructions: deque, tools, arguments_description, max_iter=10
                 KnowledgeItem(instruction[0], instruction[1], response["result"])
             )
 
-    logging.debug(f"Total tokens: {total_input_len}")
+    logging.debug(f"Total tokens: {input_tokens}(IN) {output_tokens}(OUT)")
     return knowledge
 
 
@@ -444,23 +445,20 @@ class InferenceV1:
 
         input_tokens = 0
         output_tokens = 0
-        try:
-            task_segments = segement_task(query)
+        task_segments = segement_task(query)
 
-            logging.debug(f"Task segments: {task_segments}")
-            task_and_tool = get_relevant_tools(
-                task_segments, self.tools, self.argument_descriptions
-            )
+        logging.debug(f"Task segments: {task_segments}")
+        task_and_tool = get_relevant_tools(
+            task_segments, self.tools, self.argument_descriptions
+        )
 
-            logging.debug(f"Task and tool: {task_and_tool}")
+        logging.debug(f"Task and tool: {task_and_tool}")
 
-            solution_knowledge = complete_task(
-                deque(task_and_tool), self.tools, self.argument_descriptions
-            )
+        solution_knowledge = complete_task(
+            deque(task_and_tool), self.tools, self.argument_descriptions
+        )
 
-            final_solution = topo_sort(solution_knowledge, self.argument_descriptions)
-        except Exception as e:
-            final_solution = []
+        final_solution = topo_sort(solution_knowledge, self.argument_descriptions)
 
         return final_solution, input_tokens//4, output_tokens//4
 
@@ -479,10 +477,11 @@ if __name__ == "__main__":
         "Get all work items similar to TKT-123, summarize them, create issues from that summary, and prioritize them",
     ]
 
-    # for example in examples:
-    #     print(example)
-    #     print(json.dumps(obj.invoke_agent(example), indent=2))
-    #     print()
+    for example in examples:
+        print(example)
+        op, x, y = obj.invoke_agent(example)
+        print(json.dumps(op, indent=2))
+        print()
     
-    response, iptoken, optoken = obj.invoke_agent("Prioritize my P0 issues and add them to the current sprint")
+    response, iptoken, optoken = obj.invoke_agent("What is the meaning of life?")
     print(json.dumps(response, indent=2))
