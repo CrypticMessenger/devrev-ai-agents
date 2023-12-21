@@ -11,7 +11,7 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 # from function_embeddings.OpenAIHelpers import OpenAIWrapper
 # from ..function_embeddings.OpenAIHelpers import OpenAIWrapper
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.ERROR)
 from openai import OpenAI
 
 cwd = Path.cwd().joinpath("palm_subtask_responses", "etc")
